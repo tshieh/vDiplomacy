@@ -11,7 +11,8 @@ class DarkAgesVariant extends WDVariant {
 	public $author     = 'Benjamin Hester';
 	public $adapter    = 'kaner406';
 	public $version    = '4';
-	public $codeVersion= '1.0';
+	public $codeVersion= '1.0.1';
+	public $homepage   = 'http://www.dipwiki.com/index.php?title=Dark_Ages';
 
 	public $countries=array('Gaels','Scots','Bretons','Norse','AngloSaxons','Danes','Swedes');
 
