@@ -868,7 +868,7 @@ class adminActions extends adminActionsForms
 	}
 	public function cdUser(array $params)
 	{
-		global $DB;
+		global $DB, $Game;
 
 		require_once(l_r('gamemaster/game.php'));
 
