@@ -42,7 +42,7 @@ $territoryRawData=array(
 	array('Northeast North Sea', 'Sea', 'No', 0, 643, 285, 329, 92),
 	array('Southeast North Sea', 'Sea', 'No', 0, 650, 472, 335, 232),
 	array('Heligoland Bight', 'Sea', 'No', 0, 702, 564, 356, 278),
-	array('Channel Islands', 'Sea', 'No', 0, 200, 767, 105, 379),
+	array('Channel Islands', 'Sea', 'No', 2, 200, 767, 105, 379),
 	array('Skagerrak', 'Sea', 'No', 0, 826, 378, 426, 183),
 	array('Baltic Sea', 'Sea', 'No', 0, 953, 631, 503, 290),
 	array('Denmark', 'Coast', 'Yes', 4, 804, 478, 405, 239),
