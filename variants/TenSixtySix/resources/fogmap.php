@@ -177,6 +177,12 @@ if ($verify != "fog") {
 			}	
 			elseif ($terrID2 == '31' || $terrID2 == '22')
 				$noFog[] = '5';
+			// Special treatment for CI in the first turn (was not able to see through the fog)
+			elseif ( ( $terrID1 == '37' || $terrID2 == '37' ) && $turn == -1 && $mcountry == 2)
+			{
+				$noFog[] = '23'; $noFog[] = '26'; $noFog[] = '27';			
+				$noFog[] = '51'; $noFog[] = '55'; $noFog[] = '56';
+			}
 		}
 	} else {
 		for ($i=0; $i<500; $i++)
