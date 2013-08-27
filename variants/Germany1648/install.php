@@ -245,7 +245,6 @@ $bordersRawData=array(
 	array('Archbishopric of Cologne','Duchy of Westphalia','Yes','No'),
 	array('Archbishopric of Cologne','Duchy of Berg','Yes','Yes'),
 	array('Archbishopric of Cologne','County of Sayn','Yes','No'),
-	array('Archbishopric of Cologne','Principality of Nassau','Yes','No'),
 	array('Archbishopric of Cologne','Cologne #5','No','Yes'),
 	array('Far Spanish Netherlands','Duchy of Cleves','Yes','Yes'),
 	array('Far Spanish Netherlands','County of Mark','Yes','No'),
