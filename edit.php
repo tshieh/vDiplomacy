@@ -678,7 +678,7 @@ function display_interface() {
         } else {
             print '<img src="' . $_SERVER['PHP_SELF'] . '?terrID=' . $terrID . '&variantID=' . $variantID . '&mode=' . $mode . '&mapsize=' . $mapsize . $zoomstr . '&nocache=' . (rand(1, 9999)) . '&draw" >';
         }
-		print '<div align="center"> If you can\'t see the map add "%draw" at the end of your URL to view the error message. </div>';
+		print '<div align="center"> If you can\'t see the map <b><a href="'.$_SERVER['PHP_SELF'] . '?terrID=' . $terrID . '&variantID=' . $variantID . '&mode=' . $mode . '&mapsize=' . $mapsize . $zoomstr . '&nocache=' . (rand(1, 9999)) . '&draw'.'">click here</a></b> to view the error message.</div>';
     }
 
     // Show Data
