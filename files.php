@@ -44,6 +44,20 @@ switch($msg) {
 	default   : $msg = '';
 }
 
+// You can't edit or upload a modified install.php. It causes all sort of strange problems.
+if (($action == 'upload' || $action == 'filesave') && $file=='install.php')
+{
+	$msg = 'Editing or uploading of a modified install.php is for experts only.<br>Please contakt an admin if you leally need to do this.';
+	$action = ''; $file='';
+}
+
+// You can't edit or upload a modified install.php. It causes all sort of strange problems.
+if (($action == 'upload' || $action == 'filesave') && $file=='variant.php' && !file_exists("variants/".Config::$variants[$variantID]."/install.php"))
+{
+	$msg = "You can't edit or upload variants.php while in edit-mode.";
+	$action = ''; $file='';
+}
+
 /*
  * Now for the different possible actions:
  */
@@ -299,11 +313,13 @@ if ($variantID != 0)
 
 			if ($edit == 'on')
 			{
-				// Add a delete button if we have a developer:
-				print('<td><a href="' . $_SERVER['SCRIPT_NAME'].'?variantID='.$variantID.'&action=delete&file='.$file.'&basedir='.$dirname.'">Delete</a></td>');
-				
-				// Superuser can edit files:
-				print('<td><a href="' . $_SERVER['SCRIPT_NAME'].'?variantID='.$variantID.'&action=edit&file='.$file.'&basedir='.$dirname.'">Edit</a></td>');
+				// Add a delete and edit button if we have a developer: (But on on install.php, and not on variant.php if we are still in edit-mode.
+				if ($file != "install.php" && !($file == "variant.php" && !file_exists($variantbase."/install.php")))
+				{
+					print('<td><a href="' . $_SERVER['SCRIPT_NAME'].'?variantID='.$variantID.'&action=delete&file='.$file.'&basedir='.$dirname.'">Delete</a></td>');
+					print('<td><a href="' . $_SERVER['SCRIPT_NAME'].'?variantID='.$variantID.'&action=edit&file='.$file.'&basedir='.$dirname.'">Edit</a></td>');
+				}
+
 			}
 			
 			// Superuser can verify files:
