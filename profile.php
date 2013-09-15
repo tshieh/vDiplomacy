@@ -309,6 +309,43 @@ print '<li><strong>'.l_t('Points in play:').'</strong> '.($rankingDetails['worth
 
 print '<li><strong>'.l_t('Total points:').'</strong> '.$rankingDetails['worth'].' '.libHTML::points().'</li>';
 
+/**
+ * Add possibility for mods to write down notes
+ */
+if ( $User->type['Moderator'])
+{
+
+	// Edit the note of the group
+	if (isset($_REQUEST['EditNote']))
+	{
+		$notes=$DB->msg_escape($_REQUEST['EditNote'],false);
+		$DB->sql_put("DELETE FROM wD_ModeratorNotes WHERE linkIDType='User' AND type='PrivateNote' AND linkID=".$UserProfile->id);			
+		$DB->sql_put("INSERT INTO wD_ModeratorNotes SET 
+			note='".$notes."',
+			linkID=".$UserProfile->id.",
+			timeSent=".time().",
+			fromUserID='".$User->id."',
+			type='PrivateNote',
+			linkIDType='User'");
+	}
+	
+	list($notes)=$DB->sql_row("SELECT note FROM wD_ModeratorNotes WHERE linkIDType='User' AND linkID=".$UserProfile->id);
+	
+	print '	<li>&nbsp;</li>
+	<b>ModNotes<span id="EditNoteButton"> (<a href="#" onclick="$(\'EditNoteBox\').show(); $(\'EditNoteText\').hide(); $(\'EditNoteButton\').hide(); return false;">Edit</a>)</span>:</b>
+	<TABLE>
+		<TD style="border: 1px solid #666">
+			<span id="EditNoteText">'.$notes.'</span>
+			<span id="EditNoteBox" style="display:none;">
+				<form method="post" style="display:inline;">
+					<textarea name="EditNote" style="width:100%;height:200px">'.str_ireplace("</textarea>", "<END-TA-DO-NOT-EDIT>", str_ireplace("<br />", "\n", $notes)).'</textarea><br />
+					<input type="Submit" value="Submit" />
+				</form>				
+			</span>
+		</TD>
+	</TABLE>';
+}
+
 if( $UserProfile->type['DonatorPlatinum'] )
 	$donatorMarker = libHTML::platinum().' - <strong>'.l_t('Platinum').'</strong>';
 elseif( $UserProfile->type['DonatorGold'] )
