@@ -99,6 +99,11 @@ class libHTML
 	{
 		return ' <img src="images/icons/dev_gold.png" alt="(B)" title="Developer - gold" />';
 	}
+	
+	static function alert()
+	{
+		return ' <img src="images/icons/alert_minor.png" alt="(!)" title="ModAlert" />';
+	}
 
 	/**
 	 * The points icon

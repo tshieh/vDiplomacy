@@ -796,6 +796,9 @@ $sql[]="CREATE TABLE `wD_vDipMisc` (
 	) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 $sql[]="INSERT INTO `wD_vDipMisc` VALUES ('Version',32)";
 
+// VDip: 33
+$sql[]="ALTER TABLE `wD_Users` ADD `pointNClick` enum('Yes','No') CHARACTER SET utf8 NOT NULL DEFAULT 'No';";
+
 // Webdip 1.34
 $sql[]="ALTER TABLE `wD_Backup_Games` CHANGE `missingPlayerPolicy` `missingPlayerPolicy` ENUM( 'Normal', 'Strict', 'Wait' ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Normal';";
 $sql[]="ALTER TABLE `wD_Games` CHANGE `missingPlayerPolicy` `missingPlayerPolicy` ENUM( 'Normal', 'Strict', 'Wait' ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Normal';";
@@ -837,9 +840,12 @@ $sql[]="INSERT INTO wD_VariantData (variantID, systemToken, userID, offset, val_
 	FROM wD_Users u
 	WHERE NOT ChanceTurkey = 0.142857;";
 
+// VDip: 34
+$sql[]="ALTER TABLE `wD_Users` CHANGE `type` `type` SET( 'Banned', 'Guest', 'System', 'User', 'Moderator', 'Admin', 'Donator', 'DonatorBronze', 'DonatorSilver', 'DonatorGold', 'DonatorPlatinum', 'DevBronze', 'DevSilver', 'DevGold', 'ForumModerator', 'ModAlert' ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'User';";
+	
 // Set the correct version-information in the database	
 $sql[]="UPDATE `wD_Misc`     SET `value` = '135' WHERE `name` = 'Version';";
-$sql[]="UPDATE `wD_vDipMisc` SET `value` = '32'  WHERE `name` = 'Version';";
+$sql[]="UPDATE `wD_vDipMisc` SET `value` = '34'  WHERE `name` = 'Version';";
 
 // Create a default Admin-Account
 require_once ('lib/auth.php');

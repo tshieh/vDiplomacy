@@ -571,7 +571,7 @@ class User {
 		// Convert an array of types this user has into an array of true/false indexed by type
 		$this->type = explode(',', $this->type);
 		$validTypes = array('System','Banned','User','Moderator','Guest','Admin','Donator','DonatorBronze','DonatorSilver','DonatorGold','DonatorPlatinum','ForumModerator'
-								,'DevBronze','DevSilver','DevGold');
+								,'DevBronze','DevSilver','DevGold', 'ModAlert');
 		$types = array();
 		foreach($validTypes as $type)
 		{
@@ -622,6 +622,9 @@ class User {
 	}
 
 	static function typeIcon($type, $showMod=true) {
+	
+		global $User;
+		
 		// This must take either a list as it comes from a SQL query, or a built-in $this->type['Admin'] style array
 		if( is_array($type) ) {
 			$types=array();
@@ -647,6 +650,9 @@ class User {
 			$buf .= libHTML::silver();
 		elseif( strstr($type,'DonatorBronze') )
 			$buf .= libHTML::bronze();
+			
+		if( strstr($type,'ModAlert') && isset($User->type['Moderator']) && $User->type['Moderator'] )
+			$buf .= libHTML::alert();
 			
 		if( strstr($type,'DevGold') )
 			$buf .= libHTML::devgold();
