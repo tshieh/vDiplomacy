@@ -315,22 +315,22 @@ print '<li><strong>'.l_t('Total points:').'</strong> '.$rankingDetails['worth'].
 if ( $User->type['Moderator'])
 {
 
-	// turn modalert on or off
-	if (isset($_REQUEST['alert']))
-	{
-		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'ModAlert') WHERE id = ".$UserProfile->id);
-		$UserProfile->type['ModAlert'] = true;
-	}
-	else
-	{
-		$DB->sql_put("UPDATE wD_Users SET type = REPLACE(type,'ModAlert','') WHERE id = ".$UserProfile->id);		
-		$UserProfile->type['ModAlert'] = false;
-	}
-	
 	// Edit the note of the group
 	if (isset($_REQUEST['EditNote']))
 	{
 		$DB->sql_put("DELETE FROM wD_ModeratorNotes WHERE linkIDType='User' AND type='PrivateNote' AND linkID=".$UserProfile->id);			
+
+		// turn modalert on or off
+		if (isset($_REQUEST['alert']))
+		{
+			$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'ModAlert') WHERE id = ".$UserProfile->id);
+			$UserProfile->type['ModAlert'] = true;
+		}
+		else
+		{
+			$DB->sql_put("UPDATE wD_Users SET type = REPLACE(type,'ModAlert','') WHERE id = ".$UserProfile->id);		
+			$UserProfile->type['ModAlert'] = false;
+		}
 		
 		$notes=$DB->msg_escape($_REQUEST['EditNote'],false);
 		if ($notes == '')
