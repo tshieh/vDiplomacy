@@ -266,7 +266,7 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 		}
 		else
 		{
-			$Orders = '<div id="orderDiv'.$Member->id.'">Game is currently locked by an admin (usually to fix some errors).</div>';
+			$Orders = '<div align="center" id="orderDiv'.$Member->id.'">Game is currently locked by an admin (usually to fix some errors).</div>';
 		}
 	}
 }

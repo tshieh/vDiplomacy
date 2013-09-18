@@ -108,7 +108,9 @@ class userMember extends panelMember
 	public function toggleVote($voteName)
 	{
 		global $DB;
-
+		
+		if ($this->Game->adminLock == 'Yes') return;
+			
 		$voteText = $voteName;
 		
 		// Unpause is stored as Pause in the database

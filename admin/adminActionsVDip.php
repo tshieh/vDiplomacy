@@ -34,6 +34,11 @@ class adminActionsVDip extends adminActions
 				'description' => 'How many days should the curent phase extend?',
 				'params' => array('gameID'=>'Game ID', 'extend'=>'Days to extend')
 			),
+			'toggleAdminLock' => array(
+				'name' => 'Lock/unlock a game.',
+				'description' => 'Lock (or unlock) a game to prevent users to enter orders.',
+				'params' => array('gameID'=>'GameID')
+			),
 		);
 		
 		adminActions::$actions = array_merge(adminActions::$actions, $vDipActions);
@@ -136,6 +141,17 @@ class adminActionsVDip extends adminActions
 
 		return 'This games reliability requirements was changed to: minRating = '.$minRating.', minPhases = '.$minPhases;
 	}
+	
+	public function toggleAdminLock(array $params)
+	{
+		global $DB;
+		$gameID = (int)$params['gameID'];
+		list($status)=$DB->sql_row("SELECT adminLock FROM wD_Games WHERE id = ".$gameID);
+		$DB->sql_put("UPDATE wD_Games SET adminLock = '".($status == 'Yes' ? 'No' : 'Yes')."' WHERE id = ".$gameID);		
+		
+		return 'This game is now '.( $status == 'No' ? 'locked' : 'unlocked').'.';
+	}
+	
 
 }
 ?>

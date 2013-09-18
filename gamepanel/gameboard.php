@@ -155,6 +155,9 @@ class panelGameBoard extends panelGame
 			!isset($this->Members->ByUserID[$User->id]) )
 			return '';
 
+		if ($this->adminLock == 'Yes')
+			return '';
+
 		$vAllowed = Members::$votes;
 		$vSet = $this->Members->ByUserID[$User->id]->votes;
 		$vPassed = $this->Members->votesPassed();
@@ -180,7 +183,7 @@ class panelGameBoard extends panelGame
 			</td>
 			</tr>
 			</table>';
-
+		
 		return $buf . '</div>';
 	}
 
