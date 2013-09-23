@@ -546,6 +546,7 @@ $bordersRawData=array(
 	array('Ethiopia','Gulf of Aden','Yes','No'),
 	array('Ethiopia','Sudan','Yes','Yes'),
 	array('Kenya','Mogadishu','Yes','Yes'),
+	array('Kenya','Horn of Africa','Yes','No'),
 	array('Kenya','Sudan','No','Yes'),
 	array('Mogadishu','Awdal','Yes','Yes'),
 	array('Mogadishu','Gulf of Aden','Yes','No'),
@@ -774,6 +775,7 @@ if (!file_exists('variants/'.$this->name.'/cache/sampleMap.png'))
 	copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
 
 ?>
+
 
 
 
