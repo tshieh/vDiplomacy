@@ -8,11 +8,13 @@ Array.prototype.inArray = function (value)	{
 	return false;
 };	
 
-function IconsCorrect(SeaTerrs)
+function IconsCorrect(LandTerrs)
 {
 	MyOrders.map(function(OrderObj) {
 			OrderObj.setUnitIconArea = function(newIcon) {
-				if (SeaTerrs.inArray(this.Unit.Territory.name))
+				if (LandTerrs.inArray(this.Unit.Territory.name))
+					newIcon='Army';
+				else
 					newIcon='Fleet';
 					
 				if( newIcon == this.currentUnitIcon ) return;
@@ -28,7 +30,7 @@ function IconsCorrect(SeaTerrs)
 		});
 }
 
-function NewUnitNames(SeaTerrs)
+function NewUnitNames()
 {
 	if( context.phase == 'Builds' ) {
 

@@ -10,12 +10,12 @@ class ClassicCataclysmVariant_OrderInterface extends OrderInterface
 		global $Variant;
 		parent::jsLoadBoard();
 		
-		$seaTerrs='Array("'.implode($Variant->seaTerrs, '","').'")';
+		$landTerrs='Array("'.implode($Variant->landTerrs, '","').'")';
 
-		libHTML::$footerIncludes[] = '../variants/ClassicCataclysm/resources/units_and_icons_correct_V1.01.js';
+		libHTML::$footerIncludes[] = '../variants/ClassicCataclysm/resources/units_and_icons_correct_V1.02.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); NewUnitNames('.$seaTerrs.');', $script);			
+			libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); NewUnitNames();', $script);			
 		foreach(libHTML::$footerScript as $index=>$script)
-			libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect('.$seaTerrs.');', $script);
+			libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect('.$landTerrs.');', $script);
 	}
 }
