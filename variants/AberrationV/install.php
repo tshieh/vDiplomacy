@@ -534,6 +534,7 @@ $bordersRawData=array(
 	array('Valencia','Estremadura','No','Yes'),
 	array('Valencia','Western Mediterranean','Yes','No'),
 	array('Valencia','Palma Sea','Yes','No'),
+	array('Catalonia','Estremadura','No','Yes'),
 	array('Catalonia','Toledo','No','Yes'),
 	array('Catalonia','Santiago','No','Yes'),
 	array('Catalonia','Palma Sea','Yes','No'),

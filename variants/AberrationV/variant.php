@@ -11,7 +11,7 @@ class AberrationVVariant extends WDVariant {
 	public $author     = 'Rod Walker & Nick Fitzpatrick';
 	public $adapter    = 'Ninjanrd, General Cool';
 	public $version    = '5';
-	public $codeVersion= '1.1';
+	public $codeVersion= '1.1.1';
 
 	public $countries=array('Burgundy','Byzantium','Hungary','Ireland','Israel','Poland','Sicily','Spain','Ukraine');
 
