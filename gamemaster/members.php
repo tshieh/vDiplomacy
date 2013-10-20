@@ -700,6 +700,7 @@ class processMembers extends Members
 			$DB->sql_put("UPDATE wD_Members
 					SET userID = ".$User->id.", status='Playing', orderStatus=REPLACE(orderStatus,'Ready',''),
 						missedPhases = 0, timeLoggedIn = ".time()."
+						, votes=''
 					WHERE id = ".$CD->id);
 
 			unset($this->ByUserID[$CD->userID]);
