@@ -296,7 +296,6 @@ $bordersRawData=array(
 	array('Hesse','Rhineland','No','Yes'),
 	array('Hesse','Mainz','No','Yes'),
 	array('Hesse','Westphalia','No','Yes'),
-	array('Hesse','Lusatia','No','Yes'),
 	array('Bavaria','Rhineland','No','Yes'),
 	array('Bavaria','Tyrol','No','Yes'),
 	array('Flanders','Burgundy','No','Yes'),
