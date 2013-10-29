@@ -246,6 +246,7 @@ $bordersRawData=array(
 	array('Circassia','Georgia','Yes','Yes'),
 	array('Circassia','Kuban','Yes','Yes'),
 	array('Circassia','Don','No','Yes'),
+	array('Circassia','East Black Sea','Yes','No'),
 	array('Azerbaijan','Georgia','No','Yes'),
 	array('Georgia','Armenia','Yes','Yes'),
 	array('Georgia','East Black Sea','Yes','No'),
