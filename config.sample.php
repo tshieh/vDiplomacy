@@ -210,6 +210,19 @@ class Config
 	);
 
 	/**
+	 * An array of variants that are blocked for new game creation on the server.
+	 * If you remove the variant from the $variants array you get errors if someone needs to display older games of this
+	 * variant.
+	 * If you use $blockedVariants only the creation of new games is blocked and users can view older games or statistics.
+	 *
+	 * @var array
+	 */
+	public static $blockedVariants=array(
+//		 2, // World
+//		 3, // FleetRome
+	);
+	
+	/**
 	 * Messages to display when different flags are set via the admin control panel.
 	 *
 	 * If ServerOffline is set it will be displayed and the script will not start.

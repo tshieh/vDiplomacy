@@ -152,6 +152,9 @@ else
 			$first='';
 			foreach(Config::$variants as $variantID=>$variantName)
 			{
+				if (isset(Config::$blockedVariants) && in_array($variantID,Config::$blockedVariants))
+					continue;
+					
 				$Variant = libVariant::loadFromVariantName($variantName);
 				$checkboxes[$variantName] = '<option value="'.$variantID.'"'.(($first=='')?' selected':'').'>'.$variantName.'</option>';
 				if($first=='') {
