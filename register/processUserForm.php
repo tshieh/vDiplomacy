@@ -35,8 +35,7 @@ try
 
 	$set = '';
 
-	$required = array('Username' => 'username', 'E-mail' => 'email',
-					'E-mail hiding' => 'hideEmail');
+	$required = array('Username' => 'username');
 
 	$allowed = array('Homepage'=>'homepage','Comment'=>'comment');
 
@@ -82,8 +81,6 @@ try
 
 	if( User::findUsername($SQLVars['username']) )
 		throw new Exception(l_t("The username '%s' is already in use. Please choose another.",$SQLVars['username']));
-	elseif( User::findEmail($SQLVars['email']) )
-		throw new Exception(l_t("The e-mail address '%s', is already in use. Please choose another.",$SQLVars['email']));
 
 	$DB->sql_put("INSERT INTO wD_Users SET ".$set);
 	$DB->sql_put("COMMIT");
@@ -126,3 +123,4 @@ catch(Exception $e)
 print '<div class="content"><p class="notice">'.$formOutput.'</p></div>';
 
 ?>
+
