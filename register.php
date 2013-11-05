@@ -24,10 +24,26 @@
  */
 
 require_once('header.php');
+require_once("contrib/ayah/ayah.php");
 
-require_once(l_r('objects/mailer.php'));
-global $Mailer;
-$Mailer = new Mailer();
+$ayah = new AYAH();
+if (array_key_exists('Submit', $_POST))
+{
+        // Use the AYAH object to see if the user passed or failed the game.
+        $score = $ayah->scoreResult();
+
+        if ($score)
+        {
+                // This happens if the user passes the game. In this case,
+                // we're just displaying a congratulatory message.
+                echo "Congratulations: you are a human!";
+        }
+        else
+        {
+		// This happens if the user does not pass the game.
+                echo "Sorry, but we were not able to verify you as human. Please try again.";
+        }
+}
 
 if ( $Misc->Panic )
 {
@@ -76,32 +92,13 @@ catch( Exception $e)
 
 switch($page)
 {
-	case 'firstValidationForm':
-	case 'validationForm':
-		print libHTML::pageTitle(l_t('Register a webDiplomacy account'),l_t('<strong>Pass anti-bot test</strong> -&gt; Enter your account settings -&gt; Play webDiplomacy!'));
-		break;
 	case 'firstUserForm':
 	case 'userForm':
-		print libHTML::pageTitle(l_t('Register a webDiplomacy account'),l_t('Pass anti-bot test -&gt; <strong>Enter your account settings</strong> -&gt; Play webDiplomacy!'));
+		print libHTML::pageTitle(l_t('Register a webDiplomacy account'),l_t('<strong>Enter your account settings</strong> -&gt; Pass anti-bot test -&gt; Play webDiplomacy!'));
 }
 
 switch($page)
 {
-	case 'firstValidationForm':
-
-		print '<h2>'.l_t('Welcome to vDiplomacyTest!').'</h2>';
-		print '<p>'.l_t('So that we can all enjoy fun, fair games we need to quickly double check that '.
-				'you\'re a human and that you have an e-mail address. It only takes a moment '.
-				'and it keeps the server free of spam! :-)').'</p>';
-
-
-	case 'validationForm':
-
-		require_once(l_r('locales/English/validationForm.php'));
-
-		break;
-
-
 	case 'firstUserForm':
 
 		print "<p>".l_t("<p>Enter the username and password you want, and any of the optional details/settings, into the screen below to

@@ -168,11 +168,13 @@ if( $User->type['User'] ) {
  * This is done in PHP because Eclipse complains about HTML syntax errors otherwise
  * because the starting <form><ul> is elsewhere
  */
+
+echo $ayah->getPublisherHTML();
 print '</ul>
 
 <div class="hr"></div>
 
-<input type="submit" class="form-submit notice" value="Update">
+<input type="submit" class="form-submit notice" value="Submit">
 </form>';
 
 
