@@ -417,7 +417,7 @@ class libHome
 if( !$User->type['User'] )
 {
 	print '<div class="content-notice" style="text-align:center">'.libHome::globalInfo().'</div>';
-	print libHTML::pageTitle(l_t('Welcome to vDiplomacy!'),l_t('A multiplayer web implementation of the popular turn-based strategy game Diplomacy.'));
+	print libHTML::pageTitle(l_t('Welcome to vDiplomacyTest!'),l_t('A multiplayer web implementation of the popular turn-based strategy game Diplomacy.'));
 	//print '<div class="content">';
 	?>
 	<p style="text-align: center;"><img
