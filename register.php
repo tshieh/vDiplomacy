@@ -106,7 +106,7 @@ switch($page)
 
 	case 'userForm':
 		print '<form method="post"><ul class="formlist">';
-
+		print $ayah->getPublisherHTML();
 		require_once(l_r('locales/English/userRegister.php'));
 		require_once(l_r('locales/English/user.php'));
 

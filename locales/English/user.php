@@ -169,7 +169,7 @@ if( $User->type['User'] ) {
  * because the starting <form><ul> is elsewhere
  */
 
-echo $ayah->getPublisherHTML();
+
 print '</ul>
 
 <div class="hr"></div>
