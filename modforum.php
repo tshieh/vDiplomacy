@@ -191,26 +191,24 @@ class Message
 	}
 }
 
+// Set different tabs for admins to see...
+$tabs = array(
+	'Unresolved'        =>l_t('Unresolved reports'),
+	'Resolved'          =>l_t('Resolved reports'),
+	'User threads'      =>l_t('Messages send from a mod to a specific user.'),
+	'Sticky'            =>l_t('Internal discussions'),
+);
 
-/*
- * The forum page, unfortunately one of the oldest pieces of code and gradually hacked on
- * without getting packaged up. This has left a mess with quite a few script-wide variables,
- * but this is the basic flow:
- *
- * - Check whether we're viewing the postbox or which topic we're viewing
- * - Determine the correct page to display given the session data and viewtopic data
- * - Check for new threads/replies. Check them for problems and post them.
- * - Post the postbox / pager
- * - Select the threads for this page
- * 		- For each thread check it's selected, if so print the replies to the thread
- * 		- Post a reply box if needed
- * - Once done post the finishing page selector, and save the current time of viewing the forum
- * 	so the user can come back after checking a game and see what's new and what was new before
- * 	he logged on.
- */
+$tab = 'Unresolved';
+$tabNames = array_keys($tabs);
 
-/* Is the post box open, which thread are we viewing? */
+if( isset($_REQUEST['tab']) && in_array($_REQUEST['tab'], $tabNames) )
+	$tab = $_SESSION['modForumTab'] = $_REQUEST['tab'];
+elseif( isset($_SESSION['modForumTab']) && in_array($_SESSION['modForumTab'], $tabNames) )
+	$tab = $_SESSION['modForumTab'];
 
+// End Modforumtabs	
+	
 $postboxopen = false;
 $viewthread = false;
 
@@ -482,6 +480,22 @@ if( $User->type['Guest'] )
 	print libHTML::pageTitle('ModForum', 'A place to discuss Mod topics.');
 else
 	print '<div class="content">';
+
+// More tabs for admins
+if( $User->type['Moderator'] )
+{
+	print '<div class="gamelistings-tabs">';
+	foreach($tabs as $tabChoice=>$tabTitle)
+	{
+		print '<a title="'.$tabTitle.'" alt="'.l_t($tabChoice).'" href="modforum.php?tab='.$tabChoice;
+
+		if ( $tab == $tabChoice ) print '" class="current"';
+			else                  print '"';
+		print '>'.l_t($tabChoice).'</a>';
+	}
+	print '</div>';
+}
+// end of more tabs for admins
 	
 if ($ForumThreads == 0)
 {
