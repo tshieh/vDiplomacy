@@ -847,6 +847,10 @@ $sql[]="ALTER TABLE `wD_Users` CHANGE `type` `type` SET( 'Banned', 'Guest', 'Sys
 $sql[]="UPDATE `wD_Misc`     SET `value` = '135' WHERE `name` = 'Version';";
 $sql[]="UPDATE `wD_vDipMisc` SET `value` = '34'  WHERE `name` = 'Version';";
 
+
+// vDipTest 1.35
+$sql[]="ALTER TABLE wD_Users DROP INDEX email;";
+
 // Create a default Admin-Account
 require_once ('lib/auth.php');
 $sql[]="INSERT INTO `wD_Users` (`username`, `email`, `points`, `password`, `type`) VALUES
