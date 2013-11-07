@@ -94,7 +94,7 @@ try
 	// libHTML does not like letting registered users access the registration page
 	$User = new User(GUESTID);
 
-	print libHTML::pageTitle(l_t('Register a webDiplomacy account'),l_t('Validate your e-mail address -&gt; Enter your account settings -&gt; <strong>Play webDiplomacy!</strong>'));
+	print libHTML::pageTitle(l_t('Register a webDiplomacy account'),l_t('Enter your account settings -&gt; Pass anti-bot test -&gt; <strong>Play webDiplomacy!</strong>'));
 
 	print "<h3>".l_t("Welcome to webDiplomacy!")."</h3>
 			<p>".l_t("Welcome, %s!",$SQLVars['username'])."<br /><br />
