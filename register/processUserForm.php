@@ -33,9 +33,11 @@ try
 
 	$SQLVars = User::processForm($_REQUEST['userForm'], $errors);
 
+	$SQLVars['hideEmail'] = 'Yes';
+
 	$set = '';
 
-	$required = array('Username' => 'username');
+	$required = array('Username' => 'username', 'E-mail hiding' => 'hideEmail');
 
 	$allowed = array('Homepage'=>'homepage','Comment'=>'comment');
 
