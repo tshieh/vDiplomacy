@@ -193,13 +193,13 @@ class Message
 
 // Set different tabs for admins to see...
 $tabs = array(
-	'Unresolved'        =>l_t('Unresolved reports'),
-	'Resolved'          =>l_t('Resolved reports'),
-	'User threads'      =>l_t('Messages send from a mod to a specific user.'),
-	'Sticky'            =>l_t('Internal discussions'),
+	'Open'     =>array (l_t('Unresolved reports'),' AND (status = "New" OR status = "Open")' ),
+	'Resolved' =>array (l_t('Resolved reports'),' AND status = "Resolved"'),
+	'Bugs'     =>array (l_t('Bugs to take care of'),' AND status = "Bugs"'),
+	'Sticky'   =>array (l_t('Internal discussions'),' AND status = "Sticky"'),
 );
 
-$tab = 'Unresolved';
+$tab = 'Open';
 $tabNames = array_keys($tabs);
 
 if( isset($_REQUEST['tab']) && in_array($_REQUEST['tab'], $tabNames) )
@@ -228,7 +228,7 @@ if( $User->type['User'] AND isset($_REQUEST['postboxopen'])) {
 if( !$viewthread) $viewthread=false;
 
 if ($User->type['Moderator'])
-	list($ForumThreads) = $DB->sql_row("SELECT COUNT(type) FROM wD_ModForumMessages WHERE type='ThreadStart'");
+	list($ForumThreads) = $DB->sql_row("SELECT COUNT(type) FROM wD_ModForumMessages WHERE type='ThreadStart' ". $tabs[$tab][1] );
 else
 	list($ForumThreads) = $DB->sql_row("SELECT COUNT(type) FROM wD_ModForumMessages WHERE type='ThreadStart' AND fromUserID='".$User->id."'");
 $forumPager = new PagerForum($ForumThreads);
@@ -246,7 +246,7 @@ if( !isset($_REQUEST['page']) && isset($_REQUEST['viewthread']) && $viewthread )
 		libHTML::notice('Thread not found', "The thread you requested wasn't found.");
 
 	list($position) = $DB->sql_row(
-			"SELECT COUNT(*)-1 FROM wD_ModForumMessages a WHERE a.latestReplySent >= ".$orderIndex." AND a.type='ThreadStart'"
+			"SELECT COUNT(*)-1 FROM wD_ModForumMessages a WHERE a.latestReplySent >= ".$orderIndex." AND a.type='ThreadStart' ". ($User->type['Moderator'] ? $tabs[$tab][1] : '')
 		);
 
 	$forumPager->currentPage = $forumPager->pageCount - floor($position/PagerForum::$defaultPostsPerPage);
@@ -255,8 +255,9 @@ if( !isset($_REQUEST['page']) && isset($_REQUEST['viewthread']) && $viewthread )
 if (isset($_REQUEST['toggleStatus']) && $User->type['Moderator'])
 {
 	list($status)=$DB->sql_row("SELECT status FROM wD_ModForumMessages WHERE id = ".$viewthread);
-	$newstatus = ($status=='Resolved' ? 'Open' : 'Resolved');
+	$newstatus = $_REQUEST['toggleStatus'];
 	$DB->sql_put("UPDATE wD_ModForumMessages SET status='".$newstatus."' WHERE id = ".$viewthread);
+	$tab = $newstatus;
 }
 
 if( !isset($_REQUEST['newmessage']) ) $_REQUEST['newmessage']  = '';
@@ -485,13 +486,22 @@ else
 if( $User->type['Moderator'] )
 {
 	print '<div class="gamelistings-tabs">';
-	foreach($tabs as $tabChoice=>$tabTitle)
+	foreach($tabs as $tabChoice=>$tabParams)
 	{
+	
+		list ($tabTitle, $sql) = $tabParams;
 		print '<a title="'.$tabTitle.'" alt="'.l_t($tabChoice).'" href="modforum.php?tab='.$tabChoice;
+		
+		print ($tab == $tabChoice ? '" class="current"' : '"');
+		
+		print '>'.l_t($tabChoice).' ';
+		
+		$tabl = $DB->sql_tabl("SELECT id, latestReplySent FROM wD_ModForumMessages WHERE type = 'ThreadStart' ".$sql." ORDER BY latestReplySent DESC LIMIT 5");
+		while( list ($id, $latestReplySent) = $DB->tabl_row($tabl) )
+			print ' <img style="display:none;" class="messageIconForum" threadID="'.$id.'" messageID="'.$latestReplySent.'"'.
+					'src="'.l_s('images/icons/mail.png').'" alt="'.l_t('New').'" title="'.l_t('Unread messages!').'">';
 
-		if ( $tab == $tabChoice ) print '" class="current"';
-			else                  print '"';
-		print '>'.l_t($tabChoice).'</a>';
+		print '</a>';
 	}
 	print '</div>';
 }
@@ -610,7 +620,7 @@ $tabl = $DB->sql_tabl("SELECT
 	INNER JOIN wD_Users u ON ( f.fromUserID = u.id )
 	LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 	WHERE f.type = 'ThreadStart'
-	".($User->type['Moderator'] ? '' : " AND fromUserID = '".$User->id."'")."
+	".($User->type['Moderator'] ? $tabs[$tab][1] : " AND fromUserID = '".$User->id."'")."
 	ORDER BY f.latestReplySent DESC
 	".$forumPager->SQLLimit());
 
@@ -632,7 +642,6 @@ while( $message = $DB->tabl_hash($tabl) )
 	
 	print '<div class="hr userID'.$message['fromUserID'].' threadID'.$message['id'].'"></div>'; // Add the userID and threadID so muted users/threads dont create lines where their threads were
 
-	$switch = 3-$switch; // 1,2,1,2,1,2...
 	$switch = 3-$switch; // 1,2,1,2,1,2...
 
 	$messageAnchor = '<a name="'.($new['id'] == $message['id'] ? 'postbox' : $message['id']).'"></a>';
@@ -842,8 +851,13 @@ while( $message = $DB->tabl_hash($tabl) )
 				print ' - UserID: <input type="text" size=4 value="'.$fromUserIDprefill.'" name="fromUserID">';
 			}
 			
-			if ($message['status']!= 'New' && $User->type['Moderator'])
-				print ' - <input type="submit" class="form-submit" value="Toggle Status" name="toggleStatus">';
+			if ($User->type['Moderator'])
+				print ' - Status: <select name="toggleStatus" onchange="this.form.submit();">
+							<option value="Open"    '.($tab == 'Open'     ? 'selected' : '').'>Open</option>
+							<option value="Resolved"'.($tab == 'Resolved' ? 'selected' : '').'>Resolved</option>
+							<option value="Bugs"    '.($tab == 'Bugs'     ? 'selected' : '').'>Bugs</option>
+							<option value="Sticky"  '.($tab == 'Sticky'   ? 'selected' : '').'>Sticky</option>
+						</select>';
 			
 			print '</p></form></div>
 					<div class="hrthin"></div>';
