@@ -360,6 +360,13 @@ if ( isset($forum) )
 	print $forum.'<div class="hr"></div>';
 }
 
+/*
+ * Easy way to make the map independent from the page-layout. May be activated later.
+ *
+print '</div>';
+print '<span>'.$map.'</span>';
+print '<div style="padding: 0px !important;" class="content content-follow-on variant'.$Game->Variant->name.'"><div class="hr"></div>';
+*/
 print $map.'<div class="hr"></div>';
 
 if (isset($Orders))

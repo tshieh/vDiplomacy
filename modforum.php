@@ -252,7 +252,7 @@ if( !isset($_REQUEST['page']) && isset($_REQUEST['viewthread']) && $viewthread )
 	$forumPager->currentPage = $forumPager->pageCount - floor($position/PagerForum::$defaultPostsPerPage);
 }
 
-if (isset($_REQUEST['toggleStatus']) && $User->type['Moderator'])
+if (isset($_REQUEST['toggleStatus']) && $_REQUEST['toggleStatus'] != $tab && $User->type['Moderator'])
 {
 	list($status)=$DB->sql_row("SELECT status FROM wD_ModForumMessages WHERE id = ".$viewthread);
 	$newstatus = $_REQUEST['toggleStatus'];
@@ -282,7 +282,7 @@ AND ($_REQUEST['newmessage'] != "") ) {
 			$messageproblem = "You are posting the same message again, please don't post repeat messages.";
 			$postboxopen = !$new['sendtothread'];
 		}
-		elseif( isset($_SESSION['lastPostTime']) && $_SESSION['lastPostTime'] > (time()-20)
+		elseif( isset($_SESSION['lastPostTime']) && $_SESSION['lastPostTime'] > (time()-20) && !$User->type['Admin']
 			&& ! ( $new['sendtothread'] && isset($_SESSION['lastPostType']) && $_SESSION['lastPostType']=='ThreadStart' ) )
 		{
 			$messageproblem = "You are posting too frequently, please slow down.";
@@ -826,7 +826,7 @@ while( $message = $DB->tabl_hash($tabl) )
 				print '<p class="notice">'.$messageproblem.'</p>';
 			}
 
-			if (isset($_REQUEST['toggleStatus']) && $User->type['Moderator'])
+			if (isset($newstatus) && $User->type['Moderator'])
 				print '<p class="notice">Status changed to '.$newstatus.'</p>';
 	
 			print '<TEXTAREA NAME="newmessage" style="margin-bottom:5px;" ROWS="4">'.$_REQUEST['newmessage'].'</TEXTAREA><br />
