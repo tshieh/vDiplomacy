@@ -588,8 +588,6 @@ class User {
 		
 		$this->notifications=new setUserNotifications($this->notifications);
 
-		$this->notifications=new setUserNotifications($this->notifications);
-
 		$this->online = (bool) $this->online;
 	}
 

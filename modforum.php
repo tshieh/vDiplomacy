@@ -4,192 +4,10 @@
  * @package Base
  */
 require_once('header.php');
-require_once('pager/pager.php');
+require_once('modforum/libPager.php');
+require_once('modforum/libMessage.php');
 
 $User->clearNotification('ModForum');
-
-class PagerThread extends Pager
-{
-	public static $defaultPostsPerPage=30;
-	public $type='thread';
-	function __construct($itemsTotal, $threadID)
-	{
-		parent::__construct('modforum.php',$itemsTotal,self::$defaultPostsPerPage);
-		$this->addArgs('threadID='.$threadID);
-	}
-	function getCurrentPage($currentPage=1)
-	{
-		parent::getCurrentPage($this->pageCount);
-		if ( $this->currentPage>$this->pageCount )
-			$this->currentPage = $this->pageCount;
-	}
-	function currentPageNumber()
-	{
-		return parent::currentPageNumber();
-		if( $this->currentPage != $this->pageCount )
-			return parent::currentPageNumber();
-		else
-			return '';
-	}
-}
-
-class PagerForum extends Pager
-{
-	public static $defaultPostsPerPage=30;
-	public $type='forum';
-	
-	function __construct($itemsTotal)
-	{
-		parent::__construct('modforum.php',$itemsTotal,self::$defaultPostsPerPage);
-	}
-	function getCurrentPage($currentPage=1)
-	{
-		parent::getCurrentPage($this->pageCount);
-		if ( $this->currentPage>$this->pageCount )
-			$this->currentPage = $this->pageCount;
-	}
-	function currentPageNumber()
-	{
-		if( $this->currentPage != $this->pageCount )
-			return parent::currentPageNumber();
-		else
-			return '';
-	}
-	
-	function SQLLimit()
-	{
-		return ' LIMIT '.($this->pageCount-$this->currentPage)*$this->itemsPerPage.', '.$this->itemsPerPage;
-	}
-}
-
-class Message
-{
-	public static function splitWords($text) {
-		return $text;
-		$words = explode(' ', $text);
-		$text=array();
-		foreach($words as $word)
-		{
-			if ( strlen($word) >= 20 )
-			{
-				$text[] = substr($word,0,20);
-				$text[] = substr($word,20,strlen($word));
-			}
-			else
-				$text[] = $word;
-		}
-		return implode(' ', $text);
-	}
-
-	static public function linkify($message)
-	{
-		$message=self::splitWords($message);
-
-		$patterns = array(
-				'/gameID[:= _]?([0-9]+)/i',
-				'/userID[:= _]?([0-9]+)/i',
-				'#modforum.php.threadID[:= _]?([0-9]+)#i',
-				'#/forum.php.*threadID[:= _]?([0-9]+)#i',
-				'/((?:[^a-z0-9])|(?:^))([0-9]+) ?(?:(?:D)|(?:points))((?:[^a-z])|(?:$))/i',
-			);
-		$replacements = array(
-				'<a href="board.php?gameID=\1" class="light">gameID=\1</a>',
-				'<a href="profile.php?userID=\1" class="light">userID=\1</a>',
-				'modforum.php?<a href="modforum.php?threadID=\1#\1" class="light">threadID=\1</a>',
-				'/forum.php?<a href="forum.php?threadID=\1#\1" class="light">threadID=\1</a>',
-				'\1\2'.libHTML::points().'\3'
-			);
-
-		return preg_replace($patterns, $replacements, $message);
-	}
-
-	/**
-	 * Send a message to the public forum. The variables passed are assumed to be already sanitized
-	 *
-	 * @param int $toID User/Thread ID to send to
-	 * @param int $fromUserID UserID sent from
-	 * @param string $message The message to be sent
-	 * @param string[optional] $subject The subject
-	 * @param string[optional] $type 'Bulletin'(GameMaster->Player) 'ThreadStart'(User->All) 'ThreadReply'(User->Thread)
-	 *
-	 * @return int The message ID
-	 */
-	static public function send($toID, $fromUserID, $message, $subject="", $type='Bulletin', $adminReply='No')
-	{
-		global $DB, $User;
-
-		if( defined('AdminUserSwitch') && AdminUserSwitch != $User->id) $fromUserID = AdminUserSwitch;
-
-		$message = self::linkify($message);
-
-		$sentTime=time();
-
-		if( 65000 < strlen($message) )
-		{
-			throw new Exception("Message too long");
-		}
-
-		libCache::wipeDir(libCache::dirName('mod_forum'));
-
-		$DB->sql_put("INSERT INTO wD_ModForumMessages
-						SET toID = ".$toID.", fromUserID = ".$fromUserID.", timeSent = ".$sentTime.",
-						message = '".$message."', subject = '".$subject."', replies = 0,
-						type = '".$type."', latestReplySent = 0, adminReply = '".$adminReply."'");
-
-		$id = $DB->last_inserted();
-
-		$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications, 'ModForum') WHERE type LIKE '%Moderator%' AND id != ".$fromUserID);
-		
-		if ( $type == 'ThreadReply' )
-			$DB->sql_put("UPDATE wD_ModForumMessages SET latestReplySent = ".$id.", replies = replies + 1 WHERE ( id=".$id." OR id=".$toID." )");
-		else
-			$DB->sql_put("UPDATE wD_ModForumMessages SET latestReplySent = id WHERE id = ".$id);
-			
-		if ($User->type['Moderator'] && $adminReply=='No')
-		{
-			$DB->sql_put("UPDATE wD_ModForumMessages SET status='Open' WHERE status='New' AND id = ".$toID);
-		}
-		
-		if ( $type == 'ThreadReply' && $adminReply=='No')
-		{
-			list($starter) = $DB->sql_row('SELECT fromUserID FROM wD_ModForumMessages WHERE id = '.$toID);
-			if ($starter != $fromUserID)
-				$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications, 'ModForum') WHERE id = ".$starter);
-		}	
-
-
-		$tabl=$DB->sql_tabl("SELECT t.id FROM wD_ModForumMessages t LEFT JOIN wD_ModForumMessages r ON ( r.toID=t.id AND r.fromUserID=".$fromUserID." AND r.type='ThreadReply' ) WHERE t.type='ThreadStart' AND ( t.fromUserID=".$fromUserID." OR r.id IS NOT NULL ) GROUP BY t.id");
-		$participatedThreadIDs=array();
-		while(list($participatedThreadID)=$DB->tabl_row($tabl)) {
-			$participatedThreadIDs[$participatedThreadID] = $participatedThreadID;
-		}
-
-		$cacheUserParticipatedThreadIDsFilename = libCache::dirID('users',$fromUserID).'/readModThreads.js';
-
-		file_put_contents($cacheUserParticipatedThreadIDsFilename, 'participatedModThreadIDs = $A(['.implode(',',$participatedThreadIDs).']);');
-
-		return $id;
-	}
-
-	/**
-	 * Remove any HTML added to a message
-	 * @param $message The message to filter
-	 * @return string The filtered message
-	 */
-	static function refilterHTML($message)
-	{
-		$patterns = array(
-				'/<[^>]+>/i',
-				'/<[^>]+$/i'
-			);
-		$replacements = array(
-				' ',
-				' '
-			);
-
-		return preg_replace($patterns, $replacements, $message);
-	}
-}
 
 // Set different tabs for admins to see...
 $tabs = array(
@@ -237,6 +55,16 @@ if( !isset($_SESSION['lastSeenModForum']) || $_SESSION['lastSeenModForum'] < $Us
 {
 	$_SESSION['lastSeenModForum']=$User->timeLastSessionEnded;
 }
+
+
+// forceReply (Yes, No)
+$forceReply = (isset($_REQUEST['forceReply'])) ? $_REQUEST['forceReply'] : ''; 
+switch($forceReply) {
+	case 'Yes':
+	case 'No': break;
+	default: $sc = '';
+}
+$forceUserID = (isset($_REQUEST['forceUserID']) ? (int)$_REQUEST['forceUserID'] : '0');
 
 if( !isset($_REQUEST['page']) && isset($_REQUEST['viewthread']) && $viewthread )
 {
@@ -289,8 +117,7 @@ AND ($_REQUEST['newmessage'] != "") ) {
 			$postboxopen = !$new['sendtothread'];
 		}
 		else
-		{
-		
+		{		
 			if( isset($_REQUEST['fromUserID']) && $User->type['Admin'] && (int)$_REQUEST['fromUserID'] > 4)
 				$fromUserID=(int)$_REQUEST['fromUserID'];
 			else
@@ -333,7 +160,7 @@ AND ($_REQUEST['newmessage'] != "") ) {
 									"characters, please choose a subject with normal words.");
 
 						
-						$new['id'] = Message::send(0,
+						$new['id'] = ModForumMessage::send(0,
 							$fromUserID,
 							$new['message'],
 							$new['subject'],
@@ -373,7 +200,7 @@ AND ($_REQUEST['newmessage'] != "") ) {
 					// It's being sent to an existing, non-silenced / dated thread.
 					try
 					{
-						$new['id'] = Message::send( $new['sendtothread'],
+						$new['id'] = ModForumMessage::send( $new['sendtothread'],
 							$fromUserID,
 							$new['message'],
 								'',
@@ -388,6 +215,18 @@ AND ($_REQUEST['newmessage'] != "") ) {
 						$messageproblem="Reply posted sucessfully.";
 						$new['message']=""; $new['subject']="";
 						
+						if ($forceUserID != 0)
+						{
+							$DB->sql_put('UPDATE wD_ModForumMessages 
+								SET forceReply="'.$forceReply.'",
+								toUserID = "'.$forceUserID.'"
+								WHERE id = '.$new['id']);
+								
+							$DB->sql_put("UPDATE wD_Users 
+								SET notifications = CONCAT_WS(',',notifications, 'ForceModMessage') 
+								WHERE id = ".$forceUserID);
+								
+						}
 					}
 					catch(Exception $e)
 					{
@@ -728,9 +567,12 @@ while( $message = $DB->tabl_hash($tabl) )
 		$replytabl = $DB->sql_tabl(
 			"SELECT f.id, fromUserID, f.timeSent, f.message, u.points as points, IF(s.userID IS NULL,0,1) as online,
 					u.username as fromusername, f.toID, u.type as userType, 
-					f.adminReply as adminReply
+					f.adminReply as adminReply,
+					f.forceReply,
+					f.toUserID, u2.username as tousername
 				FROM wD_ModForumMessages f
 				INNER JOIN wD_Users u ON f.fromUserID = u.id
+				LEFT JOIN wD_Users u2 ON f.toUserID= u2.id
 				LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 				WHERE f.toID=".$message['id']." AND f.type='ThreadReply'
 				order BY f.timeSent ASC
@@ -790,6 +632,8 @@ while( $message = $DB->tabl_hash($tabl) )
 
 			print '</div>';
 
+			if ($reply['toUserID'] != 0)
+				print "Send to: ".$reply['tousername']. ($reply['forceReply'] == 'Yes' ? ' (Waiting for answer...)' : '');
 
 			print '
 				<div class="message-body replyalternate'.$replyswitch.'" '
@@ -799,8 +643,51 @@ while( $message = $DB->tabl_hash($tabl) )
 					</div>
 				</div>
 
-				<div style="clear:both"></div>
-				</div>';
+				<div style="clear:both"></div>';
+			
+			// Embed forced reply.
+			if ($reply['forceReply']=='Done' && $User->type['Moderator'])
+			{
+				$forceReply = $DB->sql_hash(
+					"SELECT f.id, fromUserID, f.timeSent, f.message, u.points as points, IF(s.userID IS NULL,0,1) as online,
+							u.username as fromusername, f.toID, u.type as userType
+						FROM wD_ModForumMessages f
+						INNER JOIN wD_Users u ON f.fromUserID = u.id
+						LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
+						WHERE f.toID=".$reply['id']);
+						
+				print '<div class="reply replyborder1 replyalternate1 reply-top userID'.$forceReply['fromUserID'].'" style="background-color:#ffffff; width:600px">';
+
+				print '<a name="'.$forceReply['id'].'"></a>';
+
+				print '<div class="message-head replyalternate1 leftRule" style="background-color:#ffffff;">';
+
+				print '<strong><a href="profile.php?userID='.$forceReply['fromUserID'].'">'.$forceReply['fromusername'].' '.
+					libHTML::loggedOn($forceReply['fromUserID']).
+					' ('.$forceReply['points'].' '.libHTML::points().User::typeIcon($forceReply['userType']).')';
+				
+				print '</a></strong><br />';
+
+				print libHTML::forumMessage($message['id'],$forceReply['id']);
+
+				print '<em>'.libTime::text($forceReply['timeSent']).'</em>';
+
+				print '</div>';
+
+				print '
+					<div class="message-body replyalternate'.$replyswitch.'" style="background-color:#ffffff;">
+						<div class="message-contents" fromUserID="'.$forceReply['fromUserID'].'">
+							'.$forceReply['message'].'
+						</div>
+					</div>
+
+					<div style="clear:both"></div>
+					</div>';
+		
+			}
+			
+			print '</div>';
+			
 		}
 		unset($replytabl, $replyfirst, $replyswitch);
 	}
@@ -831,8 +718,17 @@ while( $message = $DB->tabl_hash($tabl) )
 	
 			print '<TEXTAREA NAME="newmessage" style="margin-bottom:5px;" ROWS="4">'.$_REQUEST['newmessage'].'</TEXTAREA><br />
 					<input type="hidden" value="'.libHTML::formTicket().'" name="formTicket">
-					<input type="hidden" name="page" value="'.$forumPager->pageCount.'" />
-					<input type="submit" ';
+					<input type="hidden" name="page" value="'.$forumPager->pageCount.'" />';
+					
+			if ($User->type['Moderator'])
+				print ' forceReply: 
+							<input type="text" size=4 value="" name="forceUserID">
+							<select name="forceReply">
+								<option value="Yes" selected>Yes</option>
+								<option value="No" >No</option>
+							</select> - ';
+					
+			print '<input type="submit" ';
 					
 			if (strpos($message['userType'],'Moderator')===false && $User->type['Moderator'])
 				print 'onclick="return confirm(\'Are you sure you want post this reply visible for the thread-starter too?\');"';
@@ -858,7 +754,7 @@ while( $message = $DB->tabl_hash($tabl) )
 							<option value="Bugs"    '.($tab == 'Bugs'     ? 'selected' : '').'>Bugs</option>
 							<option value="Sticky"  '.($tab == 'Sticky'   ? 'selected' : '').'>Sticky</option>
 						</select>';
-			
+									
 			print '</p></form></div>
 					<div class="hrthin"></div>';
 		} else {
