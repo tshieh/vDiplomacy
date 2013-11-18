@@ -60,7 +60,7 @@ $territoryRawData=array(
 	array('Budapest', 'Land', 'Yes', 3, 958, 844, 479, 422),
 	array('Crimea', 'Coast', 'Yes', 0, 1232, 858, 616, 429),
 	array('Moldavia', 'Land', 'Yes', 0, 1068, 854, 534, 427),
-	array('Wallachia', 'Coast', 'Yes', 0, 1060, 946, 530, 473),
+	array('Wallachia', 'Land', 'Yes', 0, 1060, 946, 530, 473),
 	array('Burgundy', 'Land', 'No', 4, 620, 810, 310, 405),
 	array('Picardy', 'Coast', 'No', 4, 572, 764, 286, 382),
 	array('Brest', 'Coast', 'Yes', 4, 470, 798, 235, 399),
