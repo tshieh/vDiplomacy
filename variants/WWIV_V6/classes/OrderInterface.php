@@ -25,6 +25,15 @@ class WWIV_V6Variant_OrderInterface extends OrderInterface
 		global $Variant;
 		parent::jsLoadBoard();
 
+		parent::jsLoadBoard();
+		// Expand the allowed SupplyCenters array to include non-home SCs.
+		if( $this->phase=='Builds' )
+		{
+			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/supplycenterscorrect.js';
+			foreach(libHTML::$footerScript as $index=>$script)
+				libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
+		}
+		
 		if( $this->phase=='Diplomacy' )
 		{
 			$convoyCoastsJS='Array("'.implode($Variant->convoyCoasts, '","').'")';
