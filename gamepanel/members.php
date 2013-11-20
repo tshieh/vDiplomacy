@@ -76,7 +76,7 @@ class panelMembers extends Members
 	 */
 	function membersList()
 	{
-		if( $this->Game->phase == 'Pre-game' && count($this->ByCountryID)==0 )
+		if( $this->Game->phase == 'Pre-game' )
 		{
 			$membersNames = array();
 			foreach($this->ByUserID as $Member)

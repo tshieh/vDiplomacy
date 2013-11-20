@@ -48,7 +48,7 @@ class panelMembersHome extends panelMembers
 		// $membersList[$i]=array($nameOrCountryID,$iconOne,$iconTwo,...);
 		$membersList = array();
 
-		if( $this->Game->phase == 'Pre-game' && count($this->ByCountryID)==0 )
+		if( $this->Game->phase == 'Pre-game')
 		{
 			$count=count($this->ByID);
 			for($i=0;$i<$count;$i++)
