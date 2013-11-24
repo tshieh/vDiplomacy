@@ -1,7 +1,8 @@
 <?php
 
-$user1 = $user2 = array();
-$gameID=0;
+$countryID1 = $countryID2 = array();
+$gameID=$userID=0;
+$reason = '';
 
 if (!defined('IN_CODE'))
 {
@@ -18,16 +19,22 @@ $asCsv = (isset($_REQUEST['CSV'])?true:false);
 if ( isset($_REQUEST['gameID']) )
 	$gameID=(int)$_REQUEST['gameID'];
 	
-if ( isset($_REQUEST['User1']) )
-	foreach ($_REQUEST['User1'] as $user)
-		$user1[]=(int)$user;
+if ( isset($_REQUEST['userID']) && $gameID == 0 )
+	$userID=(int)$_REQUEST['userID'];
+	
+if ( isset($_REQUEST['countryID1']) )
+	foreach ($_REQUEST['countryID1'] as $user)
+		$countryID1[]=(int)$user;
 
-if ( isset($_REQUEST['User2']) )
-	foreach ($_REQUEST['User2'] as $user)
-		$user2[]=(int)$user;
+if ( isset($_REQUEST['countryID2']) )
+	foreach ($_REQUEST['countryID2'] as $user)
+		$countryID2[]=(int)$user;
+
+if ( isset($_REQUEST['reason']) && $gameID == 0 )
+	$reason = htmlentities( $_REQUEST['reason'], ENT_NOQUOTES, 'UTF-8');
 
 // Output as Txt or Csv:
-if ((($gameID != 0) && (count($user1) > 0) && (count($user2) > 0)) && ($asTxt OR $asCsv))
+if ((($gameID != 0) && (count($countryID1) > 0) && (count($countryID2) > 0)) && ($asTxt OR $asCsv))
 {
 	$Variant=libVariant::loadFromGameID($gameID);
 	
@@ -35,9 +42,9 @@ if ((($gameID != 0) && (count($user1) > 0) && (count($user2) > 0)) && ($asTxt OR
 				FROM wD_GameMessages WHERE
 					gameID = '.$gameID.' AND
 					(
-						( toCountryID IN ('.implode(', ',$user1).') AND fromCountryID IN ('.implode(', ',$user2).') )
+						( toCountryID IN ('.implode(', ',$countryID1).') AND fromCountryID IN ('.implode(', ',$countryID2).') )
 							OR
-						( toCountryID IN ('.implode(', ',$user2).') AND fromCountryID IN ('.implode(', ',$user1).') )
+						( toCountryID IN ('.implode(', ',$countryID2).') AND fromCountryID IN ('.implode(', ',$countryID1).') )
 					)
 				ORDER BY id ASC';
 	
@@ -78,7 +85,8 @@ if ((($gameID != 0) && (count($user1) > 0) && (count($user2) > 0)) && ($asTxt OR
  * Print a form for selecting which game to check, and which users to check against
  */
 print '<FORM method="get" action="admincp.php">';
-print '<P><STRONG>Game ID: </STRONG><INPUT type="text" name="gameID" value="'.($gameID!=0?$gameID:'').'" length="10" /><BR>';
+print '<P><STRONG>Game ID: </STRONG><INPUT type="text" name="gameID" value="'.($gameID!=0?$gameID:'').'" length="10" /> <br> ';
+print '<STRONG>User ID: </STRONG><INPUT type="text" name="userID" value="'.($userID!=0?$userID:'').'" length="10" /> + Reason: <INPUT type="text" name="reason" value="'.$reason.'" length="50" /><BR>';
 
 if ($gameID != 0)
 {
@@ -90,14 +98,14 @@ if ($gameID != 0)
 	
 	if ($Game->Members->isJoined())
 	{
-		if (in_array($Game->Members->ByUserID[$User->id]->countryID,$user1) && !(in_array($Game->Members->ByUserID[$User->id]->countryID,$user2)))
-			$user1=array($Game->Members->ByUserID[$User->id]->countryID);
-		elseif (in_array($Game->Members->ByUserID[$User->id]->countryID,$user2) && !(in_array($Game->Members->ByUserID[$User->id]->countryID,$user1)))
-			$user2=array($Game->Members->ByUserID[$User->id]->countryID);
-		elseif (!(in_array($Game->Members->ByUserID[$User->id]->countryID,$user2)) && !(in_array($Game->Members->ByUserID[$User->id]->countryID,$user1)))
-			$user1=$user2=array();
+		if (in_array($Game->Members->ByUserID[$User->id]->countryID,$countryID1) && !(in_array($Game->Members->ByUserID[$User->id]->countryID,$countryID2)))
+			$countryID1=array($Game->Members->ByUserID[$User->id]->countryID);
+		elseif (in_array($Game->Members->ByUserID[$User->id]->countryID,$countryID2) && !(in_array($Game->Members->ByUserID[$User->id]->countryID,$countryID1)))
+			$countryID2=array($Game->Members->ByUserID[$User->id]->countryID);
+		elseif (!(in_array($Game->Members->ByUserID[$User->id]->countryID,$countryID2)) && !(in_array($Game->Members->ByUserID[$User->id]->countryID,$countryID1)))
+			$countryID1=$countryID2=array();
 		else
-			$user1=$user2=array($Game->Members->ByUserID[$User->id]->countryID);
+			$countryID1=$countryID2=array($Game->Members->ByUserID[$User->id]->countryID);
 	}
 	
 	print $Game->titleBar().'<br>';
@@ -113,8 +121,8 @@ if ($gameID != 0)
 			<TR>
 				<TD style="border: 1px solid #666">Global</TD>
 				<TD style="border: 1px solid #666"></TD>
-				<TD style="border: 1px solid #666" align="center"><input type="checkbox" name="User1[]" value="0" '.(in_array('0',$user1)?'checked':'').'></TD>
-				<TD style="border: 1px solid #666" align="center"><input type="checkbox" name="User2[]" value="0" '.(in_array('0',$user2)?'checked':'').'></TD>
+				<TD style="border: 1px solid #666" align="center"><input type="checkbox" name="User1[]" value="0" '.(in_array('0',$countryID1)?'checked':'').'></TD>
+				<TD style="border: 1px solid #666" align="center"><input type="checkbox" name="User2[]" value="0" '.(in_array('0',$countryID2)?'checked':'').'></TD>
 			</TR>';
 
 	foreach($Game->Members->ByCountryID as $Member)
@@ -122,8 +130,8 @@ if ($gameID != 0)
 			<TR>
 				<TD style="border: 1px solid #666"><span class="memberCountryName">'.$Member->memberCountryName().'</TD>
 				<TD style="border: 1px solid #666">'.$Member->memberUserDetail().'</TD>
-				<TD style="border: 1px solid #666" align="center"><input type="checkbox" name="User1[]" value="'.$Member->countryID.'" '.(in_array($Member->countryID,$user1)?'checked':'').'></TD>
-				<TD style="border: 1px solid #666" align="center"><input type="checkbox" name="User2[]" value="'.$Member->countryID.'" '.(in_array($Member->countryID,$user2)?'checked':'').'></TD>
+				<TD style="border: 1px solid #666" align="center"><input type="checkbox" name="User1[]" value="'.$Member->countryID.'" '.(in_array($Member->countryID,$countryID1)?'checked':'').'></TD>
+				<TD style="border: 1px solid #666" align="center"><input type="checkbox" name="User2[]" value="'.$Member->countryID.'" '.(in_array($Member->countryID,$countryID2)?'checked':'').'></TD>
 			</TR>';
 				
 	print '</TABLE></DIV>';
@@ -131,15 +139,15 @@ if ($gameID != 0)
 
 print '<br><input type="submit" name="Submit" class="form-submit" value="Check" /></form>';
 
-if (($gameID != 0) && (count($user1) > 0) && (count($user2) > 0))
+if (($gameID != 0) && (count($countryID1) > 0) && (count($countryID2) > 0))
 {
 	$sql = 'SELECT message, toCountryID, fromCountryID, turn, timeSent
 				FROM wD_GameMessages WHERE
 					gameID = '.$gameID.' AND
 					(
-						( toCountryID IN ('.implode(', ',$user1).') AND fromCountryID IN ('.implode(', ',$user2).') )
+						( toCountryID IN ('.implode(', ',$countryID1).') AND fromCountryID IN ('.implode(', ',$countryID2).') )
 							OR
-						( toCountryID IN ('.implode(', ',$user2).') AND fromCountryID IN ('.implode(', ',$user1).') )
+						( toCountryID IN ('.implode(', ',$countryID2).') AND fromCountryID IN ('.implode(', ',$countryID1).') )
 					)
 				ORDER BY id ASC';
 	
@@ -171,10 +179,10 @@ if (($gameID != 0) && (count($user1) > 0) && (count($user2) > 0))
 	{
 		print '<BR><FORM method="get" action="admin/adminChatAnalyser.php">';
 		
-		foreach ($user1 as $user)
-			print '<input type="hidden" name="User1[]" value="'.$user.'">';
-		foreach ($user2 as $user)
-			print '<input type="hidden" name="User2[]" value="'.$user.'">';
+		foreach ($countryID1 as $user)
+			print '<input type="hidden" name="countryID1[]" value="'.$user.'">';
+		foreach ($countryID2 as $user)
+			print '<input type="hidden" name="countryID2[]" value="'.$user.'">';
 			
 		print  '<input type="hidden" name="gameID" value="'.$gameID.'">
 				<input type="submit" name="CSV" value="Download as .csv (Excel)">
@@ -185,6 +193,25 @@ if (($gameID != 0) && (count($user1) > 0) && (count($user2) > 0))
 		print '<br>No sent messages to display.';
 }
 
+if ($userID != 0 && $reason != '')
+{
+	$DB->sql_put("INSERT INTO wD_AdminLog ( name, userID, time, details, params )
+					VALUES ( 'CheckPMs', ".$User->id.", ".time().", '".$reason."', 'UserID:".$userID."' )");
+
+	$notices=array();
+	
+	$tabl=$DB->sql_tabl("SELECT *
+		FROM wD_Notices WHERE toUserID=".$userID."
+		AND type='PM'
+		ORDER BY timeSent DESC");
+		
+	while($hash=$DB->tabl_hash($tabl))
+	{
+		$pm = new notice($hash);
+		print $pm->viewedSplitter();
+		print $pm->html();
+	}
+}
 
 
 
