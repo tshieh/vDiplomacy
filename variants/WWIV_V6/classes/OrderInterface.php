@@ -39,12 +39,15 @@ class WWIV_V6Variant_OrderInterface extends OrderInterface
 			$convoyCoastsJS='Array("'.implode($Variant->convoyCoasts, '","').'")';
 			
 			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/coastConvoy.js';
+			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/fixLargeConvoys.js';
 			foreach(libHTML::$footerScript as $index=>$script)
 				libHTML::$footerScript[$index]=str_replace('loadModel();','loadModel();coastConvoy_loadModel('.$convoyCoastsJS.');', $script);
 			foreach(libHTML::$footerScript as $index=>$script)
 				libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();coastConvoy_loadBoard('.$convoyCoastsJS.');', $script);
 			foreach(libHTML::$footerScript as $index=>$script)
 				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();coastConvoy_loadOrdersPhase('.$convoyCoastsJS.');', $script);
+			foreach(libHTML::$footerScript as $index=>$script)
+				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();FixLargeConvoys();', $script);
 		}
 	}
 }
