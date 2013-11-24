@@ -56,7 +56,6 @@ if( !isset($_SESSION['lastSeenModForum']) || $_SESSION['lastSeenModForum'] < $Us
 	$_SESSION['lastSeenModForum']=$User->timeLastSessionEnded;
 }
 
-
 // forceReply (Yes, No)
 $forceReply = (isset($_REQUEST['forceReply'])) ? $_REQUEST['forceReply'] : ''; 
 switch($forceReply) {
@@ -335,11 +334,13 @@ if( $User->type['Moderator'] )
 		
 		print '>'.l_t($tabChoice).' ';
 		
-		$tabl = $DB->sql_tabl("SELECT id, latestReplySent FROM wD_ModForumMessages WHERE type = 'ThreadStart' ".$sql." ORDER BY latestReplySent DESC LIMIT 5");
-		while( list ($id, $latestReplySent) = $DB->tabl_row($tabl) )
+		if ($tab != $tabChoice)
+		{
+			$tabl = $DB->sql_tabl("SELECT id, latestReplySent FROM wD_ModForumMessages WHERE type = 'ThreadStart' ".$sql." ORDER BY latestReplySent DESC LIMIT 5");
+			while( list ($id, $latestReplySent) = $DB->tabl_row($tabl) )
 			print ' <img style="display:none;" class="messageIconForum" threadID="'.$id.'" messageID="'.$latestReplySent.'"'.
 					'src="'.l_s('images/icons/mail.png').'" alt="'.l_t('New').'" title="'.l_t('Unread messages!').'">';
-
+		}
 		print '</a>';
 	}
 	print '</div>';
