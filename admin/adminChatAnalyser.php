@@ -115,14 +115,14 @@ if ($gameID != 0)
 			<THEAD>
 				<TH style="border: 1px solid #000">Country</TH>
 				<TH style="border: 1px solid #000">Player</TH>
-				<TH style="border: 1px solid #000" align="center">User 1</TH>
-				<TH style="border: 1px solid #000" align="center">User 2</TH>
+				<TH style="border: 1px solid #000" align="center">Country 1</TH>
+				<TH style="border: 1px solid #000" align="center">Country 2</TH>
 			</THEAD>
 			<TR>
 				<TD style="border: 1px solid #666">Global</TD>
 				<TD style="border: 1px solid #666"></TD>
-				<TD style="border: 1px solid #666" align="center"><input type="checkbox" name="User1[]" value="0" '.(in_array('0',$countryID1)?'checked':'').'></TD>
-				<TD style="border: 1px solid #666" align="center"><input type="checkbox" name="User2[]" value="0" '.(in_array('0',$countryID2)?'checked':'').'></TD>
+				<TD style="border: 1px solid #666" align="center"><input type="checkbox" name="countryID1[]" value="0" '.(in_array('0',$countryID1)?'checked':'').'></TD>
+				<TD style="border: 1px solid #666" align="center"><input type="checkbox" name="countryID2[]" value="0" '.(in_array('0',$countryID2)?'checked':'').'></TD>
 			</TR>';
 
 	foreach($Game->Members->ByCountryID as $Member)
@@ -130,8 +130,8 @@ if ($gameID != 0)
 			<TR>
 				<TD style="border: 1px solid #666"><span class="memberCountryName">'.$Member->memberCountryName().'</TD>
 				<TD style="border: 1px solid #666">'.$Member->memberUserDetail().'</TD>
-				<TD style="border: 1px solid #666" align="center"><input type="checkbox" name="User1[]" value="'.$Member->countryID.'" '.(in_array($Member->countryID,$countryID1)?'checked':'').'></TD>
-				<TD style="border: 1px solid #666" align="center"><input type="checkbox" name="User2[]" value="'.$Member->countryID.'" '.(in_array($Member->countryID,$countryID2)?'checked':'').'></TD>
+				<TD style="border: 1px solid #666" align="center"><input type="checkbox" name="countryID1[]" value="'.$Member->countryID.'" '.(in_array($Member->countryID,$countryID1)?'checked':'').'></TD>
+				<TD style="border: 1px solid #666" align="center"><input type="checkbox" name="countryID2[]" value="'.$Member->countryID.'" '.(in_array($Member->countryID,$countryID2)?'checked':'').'></TD>
 			</TR>';
 				
 	print '</TABLE></DIV>';
