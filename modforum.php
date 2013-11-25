@@ -104,12 +104,12 @@ AND ($_REQUEST['newmessage'] != "") ) {
 
 	$new['sendtothread'] = $viewthread;
 
-		if( isset($_SESSION['lastPostText']) && $_SESSION['lastPostText'] == $new['message'] && !$User->type['Admin'])
+		if( isset($_SESSION['lastPostText']) && $_SESSION['lastPostText'] == $new['message'] && !$User->type['Moderator'])
 		{
 			$messageproblem = "You are posting the same message again, please don't post repeat messages.";
 			$postboxopen = !$new['sendtothread'];
 		}
-		elseif( isset($_SESSION['lastPostTime']) && $_SESSION['lastPostTime'] > (time()-20) && !$User->type['Admin']
+		elseif( isset($_SESSION['lastPostTime']) && $_SESSION['lastPostTime'] > (time()-20) && !$User->type['Moderator']
 			&& ! ( $new['sendtothread'] && isset($_SESSION['lastPostType']) && $_SESSION['lastPostType']=='ThreadStart' ) )
 		{
 			$messageproblem = "You are posting too frequently, please slow down.";
