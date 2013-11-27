@@ -216,10 +216,10 @@ AND ($_REQUEST['newmessage'] != "") ) {
 						
 						if ($forceUserID != 0)
 						{
-							$DB->sql_put('UPDATE wD_ModForumMessages 
-								SET forceReply="'.$forceReply.'",
-								toUserID = "'.$forceUserID.'"
-								WHERE id = '.$new['id']);
+							$DB->sql_put('INSERT INTO wD_ForceReply
+								SET id = "'.$new['id'].'",
+								forceReply="'.$forceReply.'",
+								toUserID = "'.$forceUserID.'"');
 								
 							$DB->sql_put("UPDATE wD_Users 
 								SET notifications = CONCAT_WS(',',notifications, 'ForceModMessage') 
@@ -569,14 +569,14 @@ while( $message = $DB->tabl_hash($tabl) )
 			"SELECT f.id, fromUserID, f.timeSent, f.message, u.points as points, IF(s.userID IS NULL,0,1) as online,
 					u.username as fromusername, f.toID, u.type as userType, 
 					f.adminReply as adminReply,
-					f.forceReply,
-					f.toUserID, u2.username as tousername
+					r.forceReply
 				FROM wD_ModForumMessages f
-				INNER JOIN wD_Users u ON f.fromUserID = u.id
-				LEFT JOIN wD_Users u2 ON f.toUserID= u2.id
+				LEFT JOIN wD_ForceReply r ON ( f.id = r.id )
+				INNER JOIN wD_Users u ON ( f.fromUserID = u.id )
 				LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 				WHERE f.toID=".$message['id']." AND f.type='ThreadReply'
-				order BY f.timeSent ASC
+				GROUP BY f.id
+				ORDER BY f.timeSent ASC
 				".(isset($threadPager)?$threadPager->SQLLimit():''));
 		$replyswitch = 2;
 		$replyNumber = 0;
@@ -633,9 +633,6 @@ while( $message = $DB->tabl_hash($tabl) )
 
 			print '</div>';
 
-			if ($reply['toUserID'] != 0)
-				print "Send to: ".$reply['tousername']. ($reply['forceReply'] == 'Yes' ? ' (Waiting for answer...)' : '');
-
 			print '
 				<div class="message-body replyalternate'.$replyswitch.'" '
 					.($reply['adminReply']=='Yes' ? 'style="background-color:#ffffff;"' : '').'>
@@ -647,8 +644,23 @@ while( $message = $DB->tabl_hash($tabl) )
 				<div style="clear:both"></div>';
 			
 			// Embed forced reply.
-			if ($reply['forceReply']=='Done' && $User->type['Moderator'])
+			if ($reply['forceReply'] != '' && $User->type['Moderator'])
 			{
+				$forceUsers = $DB->sql_tabl(
+					"SELECT toUserID, forceReply, username
+					FROM wD_ForceReply fr
+					LEFT JOIN wD_Users u ON ( fr.toUserID = u.id)
+					WHERE fr.id=".$reply['id']);
+					
+				print "Send to: ";
+				$first=true;
+				
+				while (list($toUserID, $forceReply, $username) = $DB->tabl_row($forceUsers) )
+				{
+					if (!$first) print " - "; $first=false;
+					print '<a href="profile.php?userID='.$toUserID.'">'.$username.'</a> '.($forceReply=='Yes'?'(Waiting for reply) ':'').'';
+				}
+				
 				$forceReply = $DB->sql_hash(
 					"SELECT f.id, fromUserID, f.timeSent, f.message, u.points as points, IF(s.userID IS NULL,0,1) as online,
 							u.username as fromusername, f.toID, u.type as userType

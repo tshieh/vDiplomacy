@@ -5,10 +5,11 @@ class ModForum
 	static function checkReply()
 	{
 		global $DB, $User;
+		
 		// Just clear the ForceReplyTag
 		if(isset($_REQUEST['clearModTagID']) AND $User->type['User'] )
 		{
-			 $DB->sql_put('UPDATE wD_ModForumMessages SET forceReply="Done" 
+			 $DB->sql_put('UPDATE wD_ForceReply SET forceReply="Done" 
 							WHERE forceReply = "No"
 								AND toUserID = '.$User->id.' 
 								AND id = '.(int)$_REQUEST['clearModTagID']);								
@@ -28,7 +29,7 @@ class ModForum
 			list($originalID)=$DB->sql_row('SELECT toID FROM wD_ModForumMessages WHERE id='.$replyID);
 			$DB->sql_put('UPDATE wD_ModForumMessages SET latestReplySent="'.$messageID.'" WHERE id = '.$originalID);
 								
-			$DB->sql_put('UPDATE wD_ModForumMessages SET forceReply="Done" 
+			$DB->sql_put('UPDATE wD_ForceReply SET forceReply="Done" 
 							WHERE forceReply = "Yes"
 								AND toUserID = '.$User->id.' 
 								AND id = '.(int)$_REQUEST['replyID']);
@@ -36,7 +37,7 @@ class ModForum
 		}
 
 	// Check and clear Modrequest.
-	list($openReq)=$DB->sql_row('SELECT count(*) FROM wD_ModForumMessages WHERE forceReply != "Done" AND toUserID = '.$User->id);
+	list($openReq)=$DB->sql_row('SELECT count(*) FROM wD_ForceReply WHERE forceReply != "Done" AND toUserID = '.$User->id);
 	if ($openReq == 0)
 		$User->clearNotification('ForceModMessage');
 	
@@ -49,8 +50,9 @@ class ModForum
 		print '<div class="content">';
 		
 		$tabl = $DB->sql_tabl("SELECT
-			id, timeSent, message, forceReply
-			FROM wD_ModForumMessages
+			m.id, timeSent, message, forceReply
+			FROM wD_ModForumMessages m
+			LEFT JOIN wD_ForceReply f ON (f.id = m.id)
 			WHERE toUserID = '".$User->id."' AND forceReply != 'Done' 
 			ORDER BY timeSent DESC");
 
