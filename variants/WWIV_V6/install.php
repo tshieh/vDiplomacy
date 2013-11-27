@@ -170,7 +170,7 @@ $territoryRawData=array(
 	array('Spain (spa)', 'Coast', 'Yes', 7, 1253, 332, 0, 0),
 	array('St Petersburg (stp)', 'Coast', 'No', 27, 1462, 190, 0, 0),
 	array('Sweden (swe)', 'Coast', 'Yes', 0, 1377, 173, 0, 0),
-	array('Syria (syr)', 'Coast', 'Yes', 0, 1560, 404, 0, 0),
+	array('Syria (syr)', 'Coast', 'No', 0, 1560, 404, 0, 0),
 	array('Tyrrhenian Sea (tyr)', 'Sea', 'No', 0, 1352, 350, 0, 0),
 	array('Ufa (ufa)', 'Land', 'Yes', 0, 1626, 228, 0, 0),
 	array('Venice (ven)', 'Coast', 'Yes', 0, 1356, 304, 0, 0),
@@ -2353,6 +2353,7 @@ if (!file_exists('variants/'.$this->name.'/cache/sampleMap.png'))
 	copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
 
 ?>
+
 
 
 
