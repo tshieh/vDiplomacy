@@ -53,32 +53,32 @@
 		parent::drawSupportHold('WarpFrom2','WarpTo2', $success);	
 	}*/
 
-function extension(order, fromTerrID, toTerrID, terrID){
+function extension(drawFunction, order, fromTerrID, toTerrID, terrID){ //as the draw functions are only local functions of interactiveMap.draw(), the current draw function have to be sent as a
     switch (order) {
         case 'supportMove':     //in php code above: public function drawSupportMove
             WrapArrowX(fromTerrID, toTerrID, terrID);
-            drawSupportMove('warpTerr1','warpFrom1', 'warpTo1', true); //true: the extension function is skipped for this call
-            drawSupportMove('warpTerr2','warpFrom2', 'warpTo2', true);
+            drawFunction('warpTerr1','warpFrom1', 'warpTo1', true); //true: the extension function is skipped for this call
+            drawFunction('warpTerr2','warpFrom2', 'warpTo2', true);
             return false;   //aborts the drawOrder function that called the extension
         case 'convoy':
             WrapArrowX(fromTerrID, toTerrID, terrID);
-            drawConvoy('warpTerr1','warpFrom1', 'warpTo1', true);
-            drawConvoy('warpTerr2','warpFrom2', 'warpTo2', true);
+            drawFunction('warpTerr1','warpFrom1', 'warpTo1', true);
+            drawFunction('warpTerr2','warpFrom2', 'warpTo2', true);
             return false;
         case 'move': 
             WrapArrowX(fromTerrID, toTerrID);
-            drawMove('warpFrom1', 'warpTo1', true);
-            drawMove('warpFrom2', 'warpTo2', true);
+            drawFunction('warpFrom1', 'warpTo1', true);
+            drawFunction('warpFrom2', 'warpTo2', true);
             return false;
         case 'retreat': 
             WrapArrowX(fromTerrID, toTerrID);
-            drawRetreat('warpFrom1', 'warpTo1', true);
-            drawRetreat('warpFrom2', 'warpTo2', true);
+            drawFunction('warpFrom1', 'warpTo1', true);
+            drawFunction('warpFrom2', 'warpTo2', true);
             return false;
         case 'supportHold': 
             WrapArrowX(fromTerrID, toTerrID);
-            drawSupportHold('warpFrom1', 'warpTo1', true);
-            drawSupportHold('warpFrom2', 'warpTo2', true);
+            drawFunction('warpFrom1', 'warpTo1', true);
+            drawFunction('warpFrom2', 'warpTo2', true);
             return false;
     }
     
@@ -129,7 +129,7 @@ function WrapArrowX(fromTerrID, toTerrID, terrID){
 			$this->territoryPositions['WarpFrom2'] = $this->territoryPositions[$fromTerr];
 			$this->territoryPositions['WarpTo2']   = $this->territoryPositions[$toTerr];
 		}*/
-    if(Math.abs(start.x - end.x) > IAmapCan.width * 1/2){
+    if(Math.abs(start.x - end.x) > interactiveMap.hiddenMap.canvasElement.width * 1/2){
         var left = {
             x: (start.x<end.x)?start.x:end.x,
             y: (start.x<end.x)?start.y:end.y
@@ -139,7 +139,7 @@ function WrapArrowX(fromTerrID, toTerrID, terrID){
             y: (start.x>end.x)?start.y:end.y
         }
         var drawToLeftX = 0;
-        var drawToRightX = IAmapCan.width;
+        var drawToRightX = interactiveMap.hiddenMap.canvasElement.width;
         // Ratio of diff(left side and left x) and diff (right side and right x)
         var ratioLeft = left.x / (left.x + drawToRightX - right.x);
 	var ratioRight = 1.0 - ratioLeft;

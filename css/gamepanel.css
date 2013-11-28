@@ -390,3 +390,8 @@ div.memberBoardHeader {
 	border-top: 1px solid #cecece!important;
 	padding:0 5%;
 }
+
+.buttonIA {
+	font-size: 12px;
+	margin-right: 2px;
+}
