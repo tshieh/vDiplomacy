@@ -580,11 +580,13 @@ while( $message = $DB->tabl_hash($tabl) )
 				".(isset($threadPager)?$threadPager->SQLLimit():''));
 		$replyswitch = 2;
 		$replyNumber = 0;
+		$replyID = 0;
 		list($maxReplyID) = $DB->sql_row("SELECT MAX(id) FROM wD_ModForumMessages WHERE toID=".$message['id']." AND type='ThreadReply'");
 		while($reply = $DB->tabl_hash($replytabl) )
 		{
 			$replyToID = $reply['toID'];
-			$replyID = $reply['id'];
+			if ( $replyID < $reply['id'] )
+				$replyID = $reply['id'];
 
 			if ($reply['adminReply']=='Yes' && !$User->type['Moderator'])
 				continue;
@@ -633,17 +635,7 @@ while( $message = $DB->tabl_hash($tabl) )
 
 			print '</div>';
 
-			print '
-				<div class="message-body replyalternate'.$replyswitch.'" '
-					.($reply['adminReply']=='Yes' ? 'style="background-color:#ffffff;"' : '').'>
-					<div class="message-contents" fromUserID="'.$reply['fromUserID'].'">
-						'.$reply['message'].'
-					</div>
-				</div>
-
-				<div style="clear:both"></div>';
-			
-			// Embed forced reply.
+				// Embed forced reply.
 			if ($reply['forceReply'] != '' && $User->type['Moderator'])
 			{
 				$forceUsers = $DB->sql_tabl(
@@ -660,6 +652,19 @@ while( $message = $DB->tabl_hash($tabl) )
 					if (!$first) print " - "; $first=false;
 					print '<a href="profile.php?userID='.$toUserID.'">'.$username.'</a> '.($forceReply=='Yes'?'(Waiting for reply) ':'').'';
 				}
+				print '<br>';
+			}
+			
+		print '<div class="message-body replyalternate'.$replyswitch.'" '
+					.($reply['adminReply']=='Yes' ? 'style="background-color:#ffffff;"' : '').'>
+					<div class="message-contents" fromUserID="'.$reply['fromUserID'].'">'.$reply['message'].'</div>
+				</div>
+
+				<div style="clear:both"></div>';
+			
+			// Embed forced reply.
+			if ($reply['forceReply'] == 'Done' && $User->type['Moderator'])
+			{
 				
 				$forceReply = $DB->sql_hash(
 					"SELECT f.id, fromUserID, f.timeSent, f.message, u.points as points, IF(s.userID IS NULL,0,1) as online,
@@ -668,35 +673,41 @@ while( $message = $DB->tabl_hash($tabl) )
 						INNER JOIN wD_Users u ON f.fromUserID = u.id
 						LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 						WHERE f.toID=".$reply['id']);
-						
-				print '<div class="reply replyborder1 replyalternate1 reply-top userID'.$forceReply['fromUserID'].'" style="background-color:#ffffff; width:600px">';
-
-				print '<a name="'.$forceReply['id'].'"></a>';
-
-				print '<div class="message-head replyalternate1 leftRule" style="background-color:#ffffff;">';
-
-				print '<strong><a href="profile.php?userID='.$forceReply['fromUserID'].'">'.$forceReply['fromusername'].' '.
-					libHTML::loggedOn($forceReply['fromUserID']).
-					' ('.$forceReply['points'].' '.libHTML::points().User::typeIcon($forceReply['userType']).')';
 				
-				print '</a></strong><br />';
+				if ($forceReply['fromUserID'] != '')
+				{
+				
+					if ($forceReply['id'] > $replyID )
+						$replyID = $forceReply['id'];
+				
+					print '<div class="reply replyborder1 replyalternate1 reply-top userID'.$forceReply['fromUserID'].'" style="background-color:#ffffff; width:600px">';
 
-				print libHTML::forumMessage($message['id'],$forceReply['id']);
+					print '<a name="'.$forceReply['id'].'"></a>';
 
-				print '<em>'.libTime::text($forceReply['timeSent']).'</em>';
+					print '<div class="message-head replyalternate1 leftRule" style="background-color:#ffffff;">';
 
-				print '</div>';
+					print '<strong><a href="profile.php?userID='.$forceReply['fromUserID'].'">'.$forceReply['fromusername'].' '.
+						libHTML::loggedOn($forceReply['fromUserID']).
+						' ('.$forceReply['points'].' '.libHTML::points().User::typeIcon($forceReply['userType']).')';
+					
+					print '</a></strong><br />';
 
-				print '
-					<div class="message-body replyalternate'.$replyswitch.'" style="background-color:#ffffff;">
-						<div class="message-contents" fromUserID="'.$forceReply['fromUserID'].'">
-							'.$forceReply['message'].'
+					print libHTML::forumMessage($message['id'],$forceReply['id']);
+
+					print '<em>'.libTime::text($forceReply['timeSent']).'</em>';
+
+					print '</div>';
+
+					print '
+						<div class="message-body replyalternate'.$replyswitch.'" style="background-color:#ffffff;">
+							<div class="message-contents" fromUserID="'.$forceReply['fromUserID'].'">
+								'.$forceReply['message'].'
+							</div>
 						</div>
-					</div>
 
-					<div style="clear:both"></div>
-					</div>';
-		
+						<div style="clear:both"></div>
+						</div>';
+				}
 			}
 			
 			print '</div>';
