@@ -2276,6 +2276,7 @@ $bordersRawData=array(
 	array('Gulf of California (goc)','Gulf de Tehuantepec (gdt)','Yes','No'),
 	array('Gulf of California (goc)','Baja (baj) (East Coast)','Yes','No'),
 	array('Pacific Coast (pac)','Gulf de Tehuantepec (gdt)','Yes','No'),
+	array('Pacific Coast (pac)','Baja (baj) (West Coast)','Yes','No'),
 	array('Kerguelen Islands (krg)','Antarctic Coast (aar)','Yes','No'),
 	array('Gulf of San Matias (gsm)','Antarctic Coast (aar)','Yes','No'),
 	array('Windhoek (wnd)','Namib Nauqluft (nmq)','Yes','Yes'),
@@ -2353,6 +2354,7 @@ if (!file_exists('variants/'.$this->name.'/cache/sampleMap.png'))
 	copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
 
 ?>
+
 
 
 
