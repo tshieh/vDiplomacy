@@ -120,18 +120,9 @@ class Config
 	public static $modEMail='moderators@yourdiplomacyserver.com';
 
 	/**
-	 * The moderator e-mail
-	 * This mail-adress will be diplayed in the rules-section of the FAQ
-	 *
-	 * @var string
-	 */
-	public static $modEMail='webdipmod@gmail.com';
-	
-	/**
 	 * An array of variants available on the server (for future releases, not yet enabled)
 	 * @var array
 	 */
-	public static $variants=array(1=>'Classic', 2=>'World', 9=>'AncMed',19=>'Modern2',20=>'Empire4');//3=>'FleetRome', 4=>'CustomStart', 5=>'BuildAnywhere');
 	public static $variants=array(
 		 1=>'Classic',
 //		 2=>'World',
