@@ -341,6 +341,12 @@ class OrderInterface
 			libHTML::$footerIncludes[] = '../interactiveMap/javascript_1.0/interactiveMapDraw.js';
 			libHTML::$footerIncludes[] = '../interactiveMap/javascript_1.0/interactiveMapOrders.js';
 			libHTML::$footerIncludes[] = '../interactiveMap/javascript_1.0/interactiveMapButtons.js';	
+			
+			libHTML::$footerScript[] = 'interactiveMap.options.scrollbars = '.($User->scrollbars=='Yes' ? 'true' : 'false');
+			libHTML::$footerScript[] = 'interactiveMap.options.greyOut = '.($User->terrGrey=='off' ? 'false' : 'true');
+			libHTML::$footerScript[] = 'interactiveMap.options.unitGreyOut = '.($User->terrGrey=='all' ? 'true' : 'false');
+			libHTML::$footerScript[] = 'interactiveMap.options.greyOutIntensity = 0.'.$User->greyOut;
+			
 			libHTML::$footerScript[]   = 'loadIA();';
 		}
 	}

@@ -843,9 +843,38 @@ $sql[]="INSERT INTO wD_VariantData (variantID, systemToken, userID, offset, val_
 // VDip: 34
 $sql[]="ALTER TABLE `wD_Users` CHANGE `type` `type` SET( 'Banned', 'Guest', 'System', 'User', 'Moderator', 'Admin', 'Donator', 'DonatorBronze', 'DonatorSilver', 'DonatorGold', 'DonatorPlatinum', 'DevBronze', 'DevSilver', 'DevGold', 'ForumModerator', 'ModAlert' ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'User';";
 	
+// VDip: 35
+$sql[]="ALTER TABLE `wD_ModForumMessages` MODIFY `status` enum('New','Open','Resolved','Bugs','Sticky') CHARACTER SET utf8 NOT NULL DEFAULT 'New';";
+
+// VDip: 36
+$sql[]="ALTER TABLE `wD_ModForumMessages` ADD `toUserID` mediumint(8) unsigned DEFAULT 0;";
+$sql[]="ALTER TABLE `wD_ModForumMessages` ADD `forceReply` enum('Yes','No','Done') CHARACTER SET utf8 NOT NULL DEFAULT 'No';";
+$sql[]="ALTER TABLE `wD_Users` MODIFY `notifications` set('PrivateMessage','GameMessage','Unfinalized','GameUpdate','ModForum','CountrySwitch','ForceModMessage');";
+
+// VDip: 37
+$sql[]="CREATE TABLE `wD_ForceReply` (
+			`id` int(10) unsigned NOT NULL,
+			`toUserID` mediumint(8) unsigned DEFAULT 0,
+			`forceReply` enum('Yes','No','Done') CHARACTER SET utf8 NOT NULL DEFAULT 'No',
+			PRIMARY KEY (`id`,`toUserID`)
+		) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+$sql[]="INSERT INTO wD_ForceReply (id, toUserID, forceReply )
+			SELECT m.id, m.toUserID, m.forceReply
+			FROM wD_ModForumMessages m
+		WHERE m.toUserID != 0;";
+$sql[]="ALTER TABLE `wD_ModForumMessages` DROP `toUserID`;";
+$sql[]="ALTER TABLE `wD_ModForumMessages` DROP `forceReply`;";
+
+// VDip: 38
+$sql[]="ALTER TABLE `wD_Users` ADD `terrGrey` enum('all','selected','off') CHARACTER SET utf8 NOT NULL DEFAULT 'all';";
+$sql[]="ALTER TABLE `wD_Users` ADD `greyOut` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT '50';";
+$sql[]="ALTER TABLE `wD_Users` ADD `scrollbars` enum('Yes','No') CHARACTER SET utf8 NOT NULL DEFAULT 'No';";
+$sql[]="ALTER TABLE `wD_Users` CHANGE `pointNClick` `pointNClick` ENUM( 'Yes', 'No' ) CHARACTER SET utf8 NOT NULL DEFAULT 'Yes';";
+$sql[]="UPDATE `wD_Users` SET `pointNClick` = 'Yes' WHERE `pointNClick` = 'No';";
+
 // Set the correct version-information in the database	
 $sql[]="UPDATE `wD_Misc`     SET `value` = '135' WHERE `name` = 'Version';";
-$sql[]="UPDATE `wD_vDipMisc` SET `value` = '34'  WHERE `name` = 'Version';";
+$sql[]="UPDATE `wD_vDipMisc` SET `value` = '38'  WHERE `name` = 'Version';";
 
 // Create a default Admin-Account
 require_once ('lib/auth.php');

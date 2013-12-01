@@ -116,6 +116,9 @@ if ( isset($_REQUEST['userForm']) )
 				'SortOrder'=>'sortOrder',
 				'UnitOrder'=>'unitOrder',
 				'pointNClick opt in'=>'pointNClick',
+				'Add greyout overlay'=>'terrGrey',
+				'greyout intensity' => 'greyOut',
+				'Remove scrollbars from smallmap'=>'scrollbars',				
 				'Homepage'=>'homepage','Comment'=>'comment');
 
 		$set = '';
@@ -196,6 +199,7 @@ function printAndFindTab()
 
 	$tabs['General']=l_t("General settings");
 	$tabs['Features']=l_t("Special features");
+	$tabs['IAmap']=l_t("Interactive map");
 	$tabs['CountrySwitch']=l_t("Send your games to other players");
 
 	$tab = 'General';
@@ -230,6 +234,9 @@ switch($tab)
 		break;
 	case 'CountrySwitch':
 		require_once(l_r('locales/English/countryswitch.php'));
+		break;
+	case 'IAmap':
+		require_once(l_r('locales/English/IAmap.php'));
 		break;
 	default:
 		require_once(l_r('locales/English/user.php'));
