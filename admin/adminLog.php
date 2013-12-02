@@ -69,7 +69,7 @@ while ( $row = $DB->tabl_hash($tabl) )
 
 	print '<td class="left time">'.$row['time'].'</td>';
 
-	print '<td class="right message">'.$row['username'].': <strong>'.$row['name'].'</strong>: '.$row['details'].$params.'</td>';
+	print '<td class="right message">'.$row['username'].': <strong>'.$row['name'].'</strong>: '.$row['details']." - ".$params.'</td>';
 	print '</tr>';
 }
 

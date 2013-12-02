@@ -213,6 +213,9 @@ class User {
 	 * OptIn for the point'nClick Map-code
 	 */
 	public $pointNClick;
+	public $terrGrey;
+	public $greyOut;
+	public $scrollbars;
 	
 	/**
 	 * 'No' if the player can submit mod reports, 'Yes' if they are muted
@@ -355,6 +358,9 @@ class User {
 					'sortOrder'=>'',
 					'unitOrder'=>'',
 					'pointNClick'=>'',
+					'terrGrey'=>'',
+					'greyOut'=>'',
+					'scrollbars'=>'',
 				'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'');
 
 		$userForm = array();
@@ -481,7 +487,34 @@ class User {
 			else
 				$SQLVars['pointNClick'] = "No";
 		}
-
+		
+		if( isset($userForm['terrGrey']) )
+		{
+			if ( $userForm['terrGrey'] == "all" )
+				$SQLVars['terrGrey'] = "all";
+			elseif ( $userForm['terrGrey'] == "selected" )
+				$SQLVars['terrGrey'] = "selected";
+			else
+				$SQLVars['terrGrey'] = "off";
+		}
+		
+		if( isset($userForm['greyOut']) )
+		{
+			$SQLVars['greyOut'] = (int)($userForm['greyOut']);
+			if ($SQLVars['greyOut'] < 10)
+				$SQLVars['greyOut'] = 10;
+			if ($SQLVars['greyOut'] > 90)
+				$SQLVars['greyOut'] = 90;			
+		}
+	
+		if( isset($userForm['scrollbars']) )
+		{
+			if ( $userForm['scrollbars'] == "Yes" )
+				$SQLVars['scrollbars'] = "Yes";
+			else
+				$SQLVars['scrollbars'] = "No";
+		}
+	
 		if( isset($userForm['locale']) )
 		{
 			if( !in_array($userForm['locale'], Config::$availablelocales) )
@@ -553,6 +586,9 @@ class User {
 			u.sortOrder,			
 			u.leftBalanced,
 			u.pointNClick,
+			u.terrGrey,
+			u.greyOut,
+			u.scrollbars,
 			IF(s.userID IS NULL,0,1) as online
 			FROM wD_Users u
 			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
@@ -586,8 +622,6 @@ class User {
 		}
 		$this->type = $types;
 		
-		$this->notifications=new setUserNotifications($this->notifications);
-
 		$this->notifications=new setUserNotifications($this->notifications);
 
 		$this->online = (bool) $this->online;

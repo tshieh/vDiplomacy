@@ -27,6 +27,7 @@
 	1.6:   Fixed the problem with the retreat errors
 	1.6.1: fixed: smallmap spelling error
 	1.6.2: fixed: wrong territory-color on the largemap
+	1.6.3: fixed: spelling error fixed
 	
 */
 
@@ -40,7 +41,8 @@ class ClassicSevenIslandsVariant extends WDVariant {
 	public $description= 'The standard Diplomacy map of Europe with 7 more SCs on islands.';
 	public $author     = 'Paul Bennett';
 	public $adapter    = 'Carey Jensen / Oliver Auth';
-	public $version    = '1.6.2';
+	public $version    = '1';
+	public $codeVersion= '1.6.3';
 	public $homepage   = 'http://www.diplom.org/Online/variants/7-island.html';
 
 	public $countries=array('England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia');

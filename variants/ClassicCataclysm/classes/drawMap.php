@@ -23,12 +23,12 @@ class ClassicCataclysmVariant_drawMap extends drawMap {
 	}
 	
 	public function addUnit($terrID, $unitType)
-	{
+	{		
 		if (isset($this->terr_owner[$terrID]))
-		{
 			parent::countryFlag($terrID, $this->terr_owner[$terrID]);
-			$unitType='Fleet';
-		}
+		
+		$unitType = (in_array($this->territoryNames[$terrID],$GLOBALS['Variants'][VARIANTID]->landTerrs) ? 'Army' : 'Fleet');
+		
 		parent::addUnit($terrID, $unitType);
 	}
 	

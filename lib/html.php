@@ -494,6 +494,16 @@ class libHTML
 					$gameNotifyBlock.
 					'</div></div>';
 		}
+		
+		// Displayes a ModMessage and prevent any other site-content to be load.
+		if ( is_object($User) && $User->notifications->ForceModMessage )
+		{
+			require_once('modforum/modforum.php');
+			ModForum::checkReply();
+			// If there are still uncleared cases...
+			if ( $User->notifications->ForceModMessage )
+				ModForum::printModMessages();
+		}
 	}
 
 	/**
@@ -1118,8 +1128,7 @@ class libHTML
 	{
 		return ' <img src="images/icons/vpoints.png" alt="D" title="vDiplomacy points" />';
 	}
-
-
+	
 }
 
 ?>

@@ -19,6 +19,7 @@
 	
 	1.0:   initial release
 	1.0.3: wrong color for retreats fixed.
+	1.0.4: Coast-units are now displayed as fleets.
 	
  */
 
@@ -36,7 +37,7 @@ class ClassicCataclysmVariant extends WDVariant {
 	public $author     ='CSKA';
 	public $adapter    ='Flame';
 	public $version    ='1.0';
-	public $codeVersion='1.0.3';
+	public $codeVersion='1.0.4';
 	public $homepage   ='http://www.diplomail.ru';
 
 	public $countries=array('England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia');
@@ -45,8 +46,15 @@ class ClassicCataclysmVariant extends WDVariant {
 		'Barents Sea', 'Norwegian Sea', 'North Sea', 'Skagerrack', 'Heligoland Bight', 'Baltic Sea',
 		'Gulf of Bothnia', 'North Atlantic Ocean', 'Irish Sea', 'English Channel', 'Mid-Atlantic Ocean',
 		'Western Mediterranean', 'Gulf of Lyons', 'Tyrrhenian Sea', 'Ionian Sea', 'Adriatic Sea',
-		'Aegean Sea', 'Eastern Mediterranean', 'Black Sea' );
-	
+		'Aegean Sea', 'Eastern Mediterranean', 'Black Sea'
+	);
+
+	public $landTerrs = array(
+		'Serbia', 'Ukraine', 'Warsaw', 'Moscow', 'Silesia', 'Munich', 'Ruhr',
+		'Paris', 'Burgundy', 'Tyrolia', 'Bohemia', 'Vienna', 'Budapest', 'Galicia'
+	);
+
+		
 	public function __construct() {
 		parent::__construct();
 

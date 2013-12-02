@@ -208,6 +208,13 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		
 		// Create first Member record & object
 		processMember::create($User->id, $Game->minimumBet, $input['countryID']);
+	
+		// Post a small note at the beginning of each ChooseYourCountry game to tell everyone discussion has to wait till everybody joined.
+		if ($input['countryID'] != 0 && $input['pressType'] != 'NoPress')
+		{
+			include_once ('lib/gamemessage.php');
+			libGameMessage::send(0, 'GameMaster', 'Please remember that negotiations before the game begins are not allowed.' , $Game->id);			
+		}
 		
 		$Game->Members->joinedRedirect();
 	}

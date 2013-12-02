@@ -41,7 +41,7 @@ span.points {
 		only (1234D) */
 	white-space: nowrap;
 }
-input[type="text"], input[type="submit"], input[type="password"], textarea, select {
+input[type="text"], input[type="submit"], input[type="password"], textarea, select, .buttonIA, #orderLineIA  {
 	font-size: 14px;
 	/*background-color: #eaffea;*/
 	border: 1px solid #c1c1c1;

@@ -370,6 +370,9 @@ class Chatbox
 		
 			$message = $messages[$i-1];
 			
+			if( $Game->phase == 'Pre-game')
+				$message['fromCountryID'] = 0;
+			
 			if (($Game->anon == 'Yes' && $Game->phase != 'Finished' 
 					&& $message['turn']==0 
 					&& $message['toCountryID']==0)
