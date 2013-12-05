@@ -938,6 +938,8 @@ class libHTML
 		$translation_credit = '';
 		if (Config::$locale == 'Italian') {
 			$translation_credit = 'Translated by <a href=https://github.com/alexintour>alexintour</a>';
+		} elseif (Config::$locale == 'Spanish') {
+			$translation_credit = 'Translated by <a href=https://github.com/Viejo-Diplomacy/Diplomacy-en-espanol>Diplomacy en Español</a>';
 		}
 
 		// Version, sourceforge and HTML compliance logos
